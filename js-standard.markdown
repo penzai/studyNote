@@ -5,7 +5,15 @@
 - `bind`传递的参数优先级比原函数高，且后来的参数是紧跟着`bind`参数的后面，而不是对位取代
 ### `class`
 #### 基础知识
-- 函数拥有`prototype`属性（原型链），而任意对象都拥有原型`__proto__`。最简单的一条从属关系为`sp.__proto__ === Super.prototype`
+- 函数拥有`prototype`属性，而任意对象拥有原型`__proto__`。
+- 所谓的原型链其实是指`__proto__`与`prototype`的从属关系
+  - `对象实例.__proto__ === 构造函数.prototype`
+  - `构造函数.prototype.__proto__ === 父构造函数.prototype`（如果父构造函数又继承于其他函数，则关系类似，一直直到顶层构造函数）
+  - `顶层构造函数.prototype.__proto__ === Object.prototype`
+  - `Object.prototype.__proto__ === null`
+  - 一层特殊的关系：`Object.__proto__ === Function.prototype`
+
+![](img/7-11-1.png)
 #### `es5`写法
 > 注意继承方法，即设置`prototype`
 ``` javascript
@@ -84,6 +92,10 @@ class Audi extends Car {
   }
 }
 ```
+#### 待解决
+- 字面量创建对象与构造函数创建对象的区别
+- new的具体代码实现
+
 ### `Promise`
 #### `all`
 都成功才能拿进入结果函数，`arr`数组里面是`p1, p2`的返回值数组。
