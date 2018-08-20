@@ -5,6 +5,7 @@
 - 开启 $ systemctl start nginx
 - 重启 $ nginx -s reload
 - 关闭 $ nginx -s stop
+- 查看日志文件 $ tail -f /usr/local/nginx/logs/access.log
 - 简单配置
 ```
 server {
@@ -24,17 +25,66 @@ server {
   }
 }
 ```
+- crm配置示例
+```
+server {
+  listen       5858;
+  client_max_body_size 10M
+  root /www/kyhs-crm;
+  location ~ .*\.(gif|jpg|jpeg|png|mp4|avi|mkv|wmv|flv|3gp|pdf|doc|docx)$ {
+    proxy_pass http://192.168.3.25:8088;
+  }
 
-## 架构简介
+  location ^~ /static/ {
+    root /www/kyhs-crm;
+  }
+  
+  location /api {
+    proxy_pass http://192.168.3.25:9004;
+    proxy_set_header K_Security_Token $http_K_Security_Token;
+ }
+```
+- 配置ssl
+```
+server {
+    listen 80;
+    # 启用ssl模块
+    listen 443 ssl;
+    server_name www.cloudwutong.com;
+    root /www/home;
+    # 设置证书和密钥
+    ssl_certificate /usr/local/www.cloudwutong.com/Nginx/1_www.cloudwutong.com_bundle.crt;
+    ssl_certificate_key /usr/local/www.cloudwutong.com/Nginx/2_www.cloudwutong.com.key;
+    location /findAllActivityInfo  {
+            proxy_pass http://118.24.13.46:7001;
+    }
+    location /findActivityInfo  {
+            proxy_pass http://118.24.13.46:7001;
+    }
+    location ~ .*\.(git|jpg|jpeg|png)$ {
+            root /usr/local/photos;
+    }
+}
+```
+
+### 架构简介
 主线程master（管理worker进程，接收外界信号）
 workder进程（实际执行的进程）
 
-## 设置跨域
+### 设置跨域
 ```
 add_header Access-Control-Allow-Origin *;
 add_header Access-Control-Allow-Headers X-Requested-With;
 add_header Access-Control-Allow-Methods GET,POST,OPTIONS;
 ```
+
+### 路由规则
+- `=` 精确匹配
+- `^~` 匹配字符串路径开头（非RegExp)
+- `~`、`!~` 正则表达式匹配
+- `/` 通用匹配
+
+> 设置代理时，是否添加`/`决定是否带上匹配路径。
 
 ## centos 6.9 安装
 ### 依赖
@@ -54,7 +104,8 @@ mv nginx-1.12.2 /usr/local/dev/
 ```
 cd /usr/local/dev/nginx-1.12.2
 
-./configure
+./configure --with-http_ssl_module
+(建议安装ssl模块用于https)
 # 编译 并 安装
 make
 make install
