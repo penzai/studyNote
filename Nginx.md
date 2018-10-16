@@ -26,6 +26,10 @@ server {
 }
 ```
 - crm配置示例
+> nginx要使用下划线获取信息需要在http或者server中开启，即设置：
+```
+underscores_in_headers on;
+```
 ```
 server {
   listen       5858;
