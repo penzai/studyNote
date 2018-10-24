@@ -64,3 +64,17 @@ rpm -ivh system-config-samba-1.2.90-1.el7.centos.noarch.rpm system-config-samba-
 system-config-samba
 ```
 
+### ssh登录免密
+生成一对密钥，“文件名”和“文件名.pub”
+```
+ssh-keygen -f 文件名 -C 注释
+```
+把公钥传到要登录的服务器上的~/.ssh目录下
+```
+scp 文件名.pub 用户名@服务器地址:~/.ssh
+```
+写入
+```
+cd ~/.ssh
+cat id_rsa.pub >> authorized_keys
+```
