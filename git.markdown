@@ -1,3 +1,15 @@
+## 用户信息
+### 查看
+```
+git config user.name
+git config user.email
+```
+### 更改
+```
+git config --global user.name '修改后用户名'
+git config --global user.email '修改后邮箱'
+```
+
 ## 合并提交
 ```
 $ git commit -m 'initial commit'
