@@ -10,12 +10,6 @@ git config --global user.name '修改后用户名'
 git config --global user.email '修改后邮箱'
 ```
 
-## 合并提交
-```
-$ git commit -m 'initial commit'
-$ git add forgotten_file
-$ git commit --amend
-```
 ## 分支
 ```
 git branch
@@ -65,7 +59,21 @@ git reset --hard 版本号1
 git push -f
 ```
 > 你回退了版本，当其他地方进行git pull时，可能对方的HEAD指针指向比版本号1更前的地方，这时可使用git reset变更指针未知
-
+### 修改commit注释
+修改最后一次commit注释
+```
+git commit --amend
+```
+修改历史
+1.运行命令弹出历史提交信息，
+```
+git rebase -i master~5
+```
+2.修改历史那一条的pick字段为edit字段，此时修改那一条历史变为最近一次提交，然后修改
+3.回到如初
+```
+git rebase --continue
+```
 
 ## 查看日志
 ### 查看细节变动
