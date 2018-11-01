@@ -19,6 +19,7 @@
   - 一层特殊的关系：`Object.__proto__ === Function.prototype`
 
 ![](img/7-11-1.png)
+![http://www.mollypages.org/tutorials/js.mp](img/js-standard/jsobj_full.jpg)
 
 #### `es5`写法
 
