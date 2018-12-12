@@ -1,4 +1,19 @@
 ## `JS`规范
+？？？
+```
+var name = 123
+function fn() {
+  console.log(name);
+}
+;(function (f) {
+  var name = 456
+  setTimeout(function () {
+    console.log(name);
+  }, 0)
+  f()
+})(fn)
+```
+
 
 ### `bind`方法
 
@@ -453,3 +468,15 @@ const sort = arr => {
   }
 }
 ```
+### 连等赋值
+一道”面试“题
+``` javascript
+var a = { n: 1 }
+a.x = a = { n: 2 }
+console.log(a.x) // ??? 
+```
+
+- 连等赋值会提前保存对象的引用，复制时右边取新的，左边取提前保存的。
+- A=B=C的调用过程其实是B=C，再执行A=B，注意C值只调用一次（可用getter进行测试）
+
+所以上述答案为`undefined`

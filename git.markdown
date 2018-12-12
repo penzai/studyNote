@@ -182,6 +182,7 @@ git rebase -i master~5
 ```
 git rebase --continue
 ```
+> 灵活运用git stash与git stash pop更方便对历史commit进行修改
 
 ## 查看日志
 

@@ -70,6 +70,35 @@ server {
     }
 }
 ```
+- 多个机器提供服务
+```
+## 下面放在http的括号内，作为第一层
+upstream test.online {
+    server 120.11.11.11:8080 weight=1;
+    server 120.11.11.12:8080 weight=1;
+}
+
+location ^~ /webs {
+      proxy_pass http://test.online;
+      proxy_redirect default;
+}
+```
+## 配置api
+### 目录转发
+- root 直接导向目录带上uri
+- alias 用于重写
+```
+# 同时请求list.html
+
+# 导向 /www/web1/a/list.html
+location /a {
+    root /www/web1;
+}
+# 导向 /www/web2/list.html
+location /a {
+    alias /www/web2:
+}
+```
 
 ### 架构简介
 主线程master（管理worker进程，接收外界信号）
@@ -85,7 +114,7 @@ add_header Access-Control-Allow-Methods GET,POST,OPTIONS;
 ### 路由规则
 - `=` 精确匹配
 - `^~` 匹配字符串路径开头（非RegExp)
-- `~`、`!~` 正则表达式匹配
+- `~`、`!~`、`~*` 正则表达式匹配
 - `/` 通用匹配
 
 > 设置代理时，是否添加`/`决定是否带上匹配路径。

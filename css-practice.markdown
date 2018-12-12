@@ -228,3 +228,30 @@ div {
   background-size: 100% 100%;
 }
 ```
+
+## 疑难杂症
+### 两个span不居中
+如下代码，正常居中。
+``` html
+<div>
+  <span>123</span>
+  <span>456</span>
+</div>
+```
+当加入img，并设置inline-block居中时，后面的456不居中，此时需要设置img为`vertical-align: middle`
+``` html
+<div>
+  <span>
+    <img style="vertical-align: middle;" />
+  </span>
+  <span>456</span>
+</div>
+```
+
+## div的伸展
+div 默认情况由本内容撑开
+
+设置 width:100% 会一直追溯到有宽度的父级
+
+flex: 1会把所有子元素都撑开
+

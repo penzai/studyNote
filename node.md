@@ -1,3 +1,11 @@
+
+## nvm管理
+- 查看已安装 nvm list
+- 查看node所有版本 nvm ls-remote
+- 安装 nvm install 版本号
+- 卸载 nvm uninstall 版本号
+- 切换 nvm use 版本号
+
 ## express
 - 由路由和中间件组成，本质上可以理解为应用在调用各种中间件
 
