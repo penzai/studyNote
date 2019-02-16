@@ -4,7 +4,7 @@
 
 ## 规范提交
 
-###  一键
+### 一键
 
 安装后，即可使用 git cz 进行快速提交
 
@@ -69,8 +69,17 @@ git checkout 分支名字
 # 新建并切换到该分支
 git checkout -b 新分支名字
 
-# 推送分支到远程主机
+# 推送未关联的分支到远程主机
 git push --set-upstream origin 本地分支
+
+```
+### 拉取一个远程分支
+```
+# 查看远程分支
+git branch -r
+# 拉取
+git checkout -b 新的本地分支名 origin/远程分支
+# (拉取后可用git branch -vv检查是否已关联上)
 ```
 
 ### 暂存分支
