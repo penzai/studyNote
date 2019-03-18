@@ -83,10 +83,22 @@ git push origin 本地分支
 git push --set-upstream origin 远程分支
 
 # 删除远程分支
-git push origin --delete serverfix
+git push origin --delete 远程分支
 
 # 删除本地分支
 git branch -d 本地分支
+
+# 推送未关联的分支到远程主机
+git push --set-upstream origin 本地分支
+
+```
+### 拉取一个远程分支
+```
+# 查看远程分支
+git branch -r
+# 拉取
+git checkout -b 新的本地分支名 origin/远程分支
+# (拉取后可用git branch -vv检查是否已关联上)
 ```
 
 ### 暂存分支
