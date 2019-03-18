@@ -2,18 +2,25 @@
 
 ![](img/git/git.png)
 
+## 克隆
+克隆指定分支
+```
+git clone -b 分支名字 地址
+```
+
 ## 规范提交
 
-###  一键
+###  安装
 
 安装后，即可使用 git cz 进行快速提交
 
 ```
 npm i -g commitizen
+
 commitizen init cz-conventional-changelog --save --save-exact
 ```
 
-### 检查提交是否符合规定
+### 提交时检测
 
 ```
 npm i -D validate-commit-msg husky
@@ -70,7 +77,16 @@ git checkout 分支名字
 git checkout -b 新分支名字
 
 # 推送分支到远程主机
-git push --set-upstream origin 本地分支
+git push origin 本地分支
+
+# 与远程分支建立管理（建立后就可以直接git push)
+git push --set-upstream origin 远程分支
+
+# 删除远程分支
+git push origin --delete serverfix
+
+# 删除本地分支
+git branch -d 本地分支
 ```
 
 ### 暂存分支
@@ -106,6 +122,16 @@ git merge
   please contact us at support@github.com
 </div>
 >>>>>>> iss53
+```
+
+### 变基
+merge会使提交历史不整洁，所以这里使用rebase
+```
+git checkout 你开发的分支
+git rebase master
+
+git checkout master
+git merge 你开发的分支
 ```
 
 ### 开发流程
@@ -185,6 +211,11 @@ git rebase --continue
 > 灵活运用git stash与git stash pop更方便对历史commit进行修改
 
 ## 查看日志
+- --oneline 压缩一行
+- --decorate标记会让git log显示每个commit的引用(如:分支、tag等)
+- --graph 图形化显示
+- --all 显示所有
+
 
 ### 查看细节变动
 

@@ -78,3 +78,21 @@ scp 文件名.pub 用户名@服务器地址:~/.ssh
 cd ~/.ssh
 cat id_rsa.pub >> authorized_keys
 ```
+
+## mysql
+### 卸载
+```
+sudo apt-get remove mysql-*
+dpkg -l |grep ^rc|awk '{print $2}' |sudo xargs dpkg -P
+```
+
+### 安装
+```
+wget https://dev.mysql.com/get/mysql-apt-config_0.8.11-1_all.deb
+
+sudo dpkg -i mysql-apt-config_w.x.y-z_all.deb
+
+sudo apt-get update
+
+sudo apt-get install mysql-server
+```
