@@ -2,15 +2,9 @@
 
 ![](img/git/git.png)
 
-## 克隆
-克隆指定分支
-```
-git clone -b 分支名字 地址
-```
-
 ## 规范提交
 
-###  安装
+### 安装插件
 
 安装后，即可使用 git cz 进行快速提交
 
@@ -32,112 +26,51 @@ npm i -D validate-commit-msg husky
 "commitmsg": "validate-commit-msg"
 ```
 
-## 比较异同
+## 常用基础操作
 
 ```
-# 比较工作区与暂存区
-git diff
-
-# 比较暂存区与版本库
-git diff --cached
-
-# 比较工作区与版本库
-git diff HEAD
-```
-
-## 用户信息
-
-### 查看
-
-```
+# 查看用户信息
 git config user.name
 git config user.email
-```
 
-### 更改
-
-```
+# 更改用户信息
 git config --global user.name '修改后用户名'
 git config --global user.email '修改后邮箱'
+
+# 克隆（默认master分支）
+git clone 地址 -b 分支名字
+
+
+# 修改最后一次提交记录
+git commit --amend
 ```
 
-## 分支
+### branch
 
-```
-# 查看本地分支
-git branch
+- `git branch -vv` 可查看各个分支与远程分支的关联情况。
+- `git checkout -b 新分支名字` 新建并切换到该分支
+> 新分支上传到远程，直接`git push origin 新的本地分支名字`
+- `git branch -D 本地分支名字` 删除本地分支
+- `git push orgin :远程分支名字` 删除远端分支
 
-# 新建分支
-git branch 新分支名字
+### pull
 
-# 切换分支
-git checkout 分支名字
+尽量使用`git pull --rebase`，这样会使新的远程记录在你现有记录之前，从而避免丑陋的 mergexxxx。
 
-# 新建并切换到该分支
-git checkout -b 新分支名字
+### merge
 
-# 推送分支到远程主机
-git push origin 本地分支
+- 为了处理一个问题，新建了 A 分支，有 3 条 commit。现在需要在 dev 分支上合并 A，使用 `git merge --squash`，可以将 A 分支所有的记录处理为待提交状态，你只需要填写本次 commit 信息（3 条 commit 不再存在于 dev 分支）。
+- 合并另一个分支的改动时，有时 git 会使用快进方式合并。为了保留合并的历史，使用 `git merge --no-ff`，让其强行关闭 fast-forward 方式。
 
-# 与远程分支建立管理（建立后就可以直接git push)
-git push --set-upstream origin 远程分支
-
-# 删除远程分支
-git push origin --delete 远程分支
-
-# 删除本地分支
-git branch -d 本地分支
-
-# 推送未关联的分支到远程主机
-git push --set-upstream origin 本地分支
-
-```
-### 拉取一个远程分支
-```
-# 查看远程分支
-git branch -r
-# 拉取
-git checkout -b 新的本地分支名 origin/远程分支
-# (拉取后可用git branch -vv检查是否已关联上)
-```
-
-### 暂存分支
-
-分支有更改时，不能直接切。需要提交或者暂存
+### stash
 
 ```
 git stash
-```
-
-暂存后此时的代码的会变成未修改时。
-切换回来时，需要弹出
-
-```
 git stash pop
 ```
 
-### 合并分支
+### rebase + merge
 
-```
-git merge
-```
-
-合并分支时，有时会产生冲突，这时需要你手动更改下列类似文件（冲突文件），提交后即合并成功
-
-> <<< 指工作区的文件，>>> 指传入的更改, === 用于分割彼此
-
-```
-<<<<<<< HEAD
-<div id="footer">contact : email.support@github.com</div>
-=======
-<div id="footer">
-  please contact us at support@github.com
-</div>
->>>>>>> iss53
-```
-
-### 变基
-merge会使提交历史不整洁，所以这里使用rebase
 ```
 git checkout 你开发的分支
 git rebase master
@@ -146,68 +79,7 @@ git checkout master
 git merge 你开发的分支
 ```
 
-### 开发流程
-
-一般开发为。创建主干，在主干基础上添加一个分支，在分支上进行提交，切换到主干合并分支
-
-> 不同祖先合并分支时，需要输入一次"合并 commit"
-
-## 回退
-
-### 回退单个文件
-
-不加 commit 即为最新的提交记录
-
-```
-git checkout <commit> -- <filename>
-```
-
-### 放弃  后面的提交 reset
-
-保留工作区文件
-
-```
-git reset SHA号
-```
-
-> 此类更新不更改工作区，所以如果你更新了版本 3，然后回到版本 1，版本 3 的内容还在工作区，只是变成了修改状态
-
-不保留工作区的文件
-
-```
-git reset --hard SHA号
-```
-
-此时提交可能会产生错误，需要强制提交。因为你回退了版本，当其他地方进行 git pull 时，可能对方的 HEAD 指针指向比版本号 1 更前的地方，这时可使用 git reset 变更指针位置
-
-```
-git reset --hard 版本号1
-git push -f
-```
-
-### 需要保留提交历史的回退 revert
-针对一次或多次的提交进行回退，过去的提交历史会保留
-```
-# 回退指定版本
-git revert 版本号
-
-# 回退多个版本[3,1)
-git revert master~3..master~1
-
-# 不产生新的”回退记录“
-git revert -n
-```
-
-
-### 修改 commit 注释
-
-修改最后一次 commit 注释
-
-```
-git commit --amend
-```
-
-#### 修改历史
+### 修改历史 commit
 
 1.运行命令弹出历史提交信息，
 
@@ -220,43 +92,14 @@ git rebase -i master~5
 ```
 git rebase --continue
 ```
-> 灵活运用git stash与git stash pop更方便对历史commit进行修改
 
-## 查看日志
+> 灵活运用 git stash 与 git stash pop 更方便对历史 commit 进行修改
+
+### log
+
 - --oneline 压缩一行
-- --decorate标记会让git log显示每个commit的引用(如:分支、tag等)
+- --decorate 标记会让 git log 显示每个 commit 的引用(如:分支、tag 等)
 - --graph 图形化显示
 - --all 显示所有
-
-
-### 查看细节变动
-
-```
-git log -p -2
-```
-
-### 查看文件变动
-
-```
-git log --stat -2
-```
-
-## 更新
-
-取回远程主机的某个分支更新
-
-```
-git fetch origin 分支名
-```
-
-把远程分支取到另一个本地分支里
-
-```
-git checkout -b 新的本地分支 主机名/远程分支
-```
-
-建立追踪关系，在现有分支与指定的远程分支之间
-
-```
-git branch --set-upstream-to=origin/<branch> 本地分支
-```
+- --p -2 查看最新 2 条的细节变动
+- --stat -2 查看最新 2 条的文件变动
