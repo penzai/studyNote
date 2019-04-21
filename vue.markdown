@@ -4,7 +4,7 @@
 - prop属性 -> data属性 -> watch属性(仅immediate)
 > 依顺序执行，且不受书写顺序影响。
 - `created`
-- 模板编译到render函数
+- 模板编译到render函数(vNode)
 > 注：这个时候还未执行模板里的代码，只是编译成render函数。如果写了render函数，那么自动跳过这一步。
 - `beforeMount`
 - render函数代码执行
