@@ -9,7 +9,7 @@ function fn() {
   var name = 456
   setTimeout(function () {
     console.log(name);
-  }, 0)
+  }, 0)v
   f()
 })(fn)
 ```
@@ -480,3 +480,32 @@ console.log(a.x) // ???
 - A=B=C的调用过程其实是B=C，再执行A=B，注意C值只调用一次（可用getter进行测试）
 
 所以上述答案为`undefined`
+
+## Array
+### empty
+使用`delete arr[i]`，原数组的下标并不会改变，而是在原来的下边出，把值设为empty，此值有一定的特殊性。
+``` javascript
+const arr = [1, 2, 3, 4, 5];
+arr[1] = undefined;
+delete arr[3];
+console.log("changed : ", arr);
+
+// for (不跳过任意)
+for (let i = 0; i < arr.length; i++) {
+  console.log(`for ${arr[i]}`);
+}
+
+// map（跳过empty，返回结果包含empty）
+const mapedArr = arr.map(v => {
+  console.log(`map ${v}`);
+  return "hello";
+});
+console.log(`mapedArr ${mapedArr}`, mapedArr);
+// filter（跳过empty，返回结果不包含empty）
+arr.forEach(v => console.log(`forEach ${v}`));
+const filteredArr = arr.filter(v => {
+  console.log(`filter ${v}`);
+  return true;
+});
+console.log(`filteredArr ${filteredArr}`, filteredArr);
+```
