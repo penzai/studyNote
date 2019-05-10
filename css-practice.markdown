@@ -32,12 +32,10 @@ html {
 ### 清除浮动
 
 ```css
-.clearfix:after {
-  content: '';
+&::after {
+  content: "";
   clear: both;
-  display: block;
-  visibility: hidden;
-  line-height: 0;
+  display: table;
 }
 ```
 
@@ -255,3 +253,160 @@ div 默认情况由本内容撑开
 
 flex: 1会把所有子元素都撑开
 
+### `margin-top/margin-bottom` bug
+子元素margin-top有值，父元素没有边框。这是子元素的margin-top会转移到父元素上面去。
+
+**规范：**
+> the expression collapsing margins means that adjoining margins (no non-empty content, padding or border areas or clearance separate them) of two or more boxes (which may be next to one another or nested) combine to form a single margin.
+
+两个相邻元素如果没有被非空元素，padding，border，浮动清除间隙分开，那么他们就会共用一个margin。
+
+例如：下面的例子，其实200px的wrap元素刚刚包含两个app元素，但是由于margin-top转移了，实际子元素内容超出边界了。
+
+``` html
+<div class="wrap">
+  <div class="app">
+    <div class="item">hello kitty</div>
+  </div>
+  <div class="app">
+    <div class="item">
+      hello bady
+    </div>
+  </div>
+</div>
+```
+``` css
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.wrap {
+  width: 700px;
+  height: 200px;
+  border: 1px solid red;
+}
+.app {
+  width: 300px;
+  height: 100px;
+  /** border: 1px solid blue; **/
+  /* &::before {
+    content: "";
+    height: 1px;
+    display: block;
+  } */
+  .item {
+    width: 200px;
+    height: 50px;
+    margin-top: 20px;
+  }
+}
+```
+
+### 移动端的字体适配方案
+``` less
+$vm_fontsize: 75;
+@function rem($px) {
+     @return ($px / $vm_fontsize ) * 1rem;
+}
+$vm_design: 750;
+html {
+    font-size: ($vm_fontsize / ($vm_design / 2)) * 100vw; 
+    @media screen and (max-width: 320px) {
+        font-size: 64px;
+    }
+    @media screen and (min-width: 540px) {
+        font-size: 108px;
+    }
+}
+// body 也增加最大最小宽度限制，避免默认100%宽度的 block 元素跟随 body 而过大过小
+body {
+    max-width: 540px;
+    min-width: 320px;
+}
+```
+
+### 多行显示
+```
+line-camp( @clamp:2 ) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: @clamp;
+  /*! autoprefixer: off */
+  -webkit-box-orient: vertical;
+  /* autoprefixer: on */
+}
+```
+
+### 移动端1px
+简单版
+``` css
+.item {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1px;
+    background-color: red;
+    transform: scaleY(0.5);
+  }
+}
+```
+
+精细版
+``` css
+.min-device-pixel-ratio(@scale2, @scale3) {
+  @media screen and (min-device-pixel-ratio: 2), (-webkit-min-device-pixel-ratio: 2) {
+    transform: @scale2;
+  }
+  @media screen and (min-device-pixel-ratio: 3), (-webkit-min-device-pixel-ratio: 3) {
+    transform: @scale3;
+  }
+}
+
+.border-1px(@color: #DDD, @radius: 2PX, @style: solid) {
+  &::before {
+    content: "";
+    pointer-events: none;
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform-origin: 0 0;
+    border: 1PX @style @color;
+    border-radius: @radius;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    @media screen and (min-device-pixel-ratio: 2), (-webkit-min-device-pixel-ratio: 2) {
+      width: 200%;
+      height: 200%;
+      border-radius: @radius * 2;
+      transform: scale(.5);
+    }
+    @media screen and (min-device-pixel-ratio: 3), (-webkit-min-device-pixel-ratio: 3) {
+      width: 300%;
+      height: 300%;
+      border-radius: @radius * 3;
+      transform: scale(.33);
+    }
+  }
+}
+
+.border-top-1px(@color: #DDD, @style: solid) {
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    border-top: 1Px @style @color;
+    transform-origin: 0 0;
+    .min-device-pixel-ratio(scaleY(.5), scaleY(.33));
+  }
+}
+```
