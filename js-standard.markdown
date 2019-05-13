@@ -509,3 +509,6 @@ const filteredArr = arr.filter(v => {
 });
 console.log(`filteredArr ${filteredArr}`, filteredArr);
 ```
+
+### async/await
+注意for循环（循环之间会等待）与forEach（不会等待）调用的不同。

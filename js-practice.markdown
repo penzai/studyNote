@@ -101,3 +101,25 @@ var calcLivingRlt = calcLiving(2)(3, 5)(3)
 console.log(calcLivingRlt.valueOf()) // 48
 ```
 
+### 并发请求max个
+``` javascript
+function sendRequest(urls, max, callback) {
+  const min = Math.min(urls.length, max);
+  const requestPool = [...urls];
+  let pendingPool = requestPool.splice(0, min).map(url => Symbol(url));
+
+  const startRequest = async url => {
+    const key = Symbol(url);
+    pendingPool.push(key);
+
+    await fetch(url);
+    pendingPool = pendingPool.filter(pendingKey => pendingKey !== key);
+    requestPool.length > 0 ? startRequest(requestPool.pop()) : callback();
+  };
+
+  for (let i = 0; i < min; i++) {
+    startRequest(requestPool.pop());
+  }
+}
+```
+
