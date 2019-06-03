@@ -74,7 +74,7 @@ if (typeof Object.create !== 'function') {
     function F() {}
     F.prototype = proto
 
-    retunr new F()
+    return new F()
   }
 }
 // 推荐，es6式继承方法
@@ -119,10 +119,34 @@ class Audi extends Car {
 }
 ```
 
-#### 待解决
+#### new的实现
+1. 创建空对象
+2. 链接原型链
+3. 执行构造函数
+4. 根据步骤3的结果类型返回不同的值
 
--  字面量创建对象与构造函数创建对象的区别
-- new 的具体代码实现
+``` javascript
+// es5
+var _new = function() {
+  var Constructor = [].shift.call(arguments);
+  if (typeof Constructor !== "function") {
+    throw new Error("请传入正确的构造函数");
+  }
+  var instance = Object.create(Constructor.prototype);
+  var ret = Constructor.apply(instance, arguments);
+  return ret instanceof Object ? ret : instance;
+};
+
+// es6
+const _new2 = (Constructor, ...args) => {
+  if (typeof Constructor !== "function") {
+    throw new Error("请传入正确的构造函数");
+  }
+  const instance = Object.create(Constructor.prototype);
+  const ret = Constructor.apply(instance, args);
+  return ret instanceof Object ? ret : instance;
+};
+```
 
 ### `Promise`
 
