@@ -1,29 +1,12 @@
-## `JS`规范
-？？？
-```
-var name = 123
-function fn() {
-  console.log(name);
-}
-;(function (f) {
-  var name = 456
-  setTimeout(function () {
-    console.log(name);
-  }, 0)v
-  f()
-})(fn)
-```
-
-
+# `JS`标准
 ### `bind`方法
-
 - 语法`fun.bind(thisArg[, arg1[, arg2[, ...]]])`
 - 此方法会产生一个**新方法**，所以原方法改变了,它依然存在
 - `bind`传递的参数优先级比原函数高，且后来的参数是紧跟着`bind`参数的后面，而不是对位取代
 
-### `class`
+## `class`
 
-#### 基础知识
+### 基础知识
 
 - 函数拥有`prototype`属性，而任意对象拥有原型`__proto__`。
 - 所谓的原型链其实是指`__proto__`与`prototype`的从属关系
@@ -36,7 +19,7 @@ function fn() {
 ![](img/7-11-1.png)
 ![http://www.mollypages.org/tutorials/js.mp](img/js-standard/jsobj_full.jpg)
 
-#### `es5`写法
+### `es5`写法
 
 > 注意继承方法，即设置`prototype`
 
@@ -58,38 +41,23 @@ function Audi(name, color, price) {
   Car.call(this, name, color)
   this.price = price
 }
-// Polyfill
-if (typeof Object.create !== 'function') {
-  Object.create = function (proto, propertiesObject) {
-    if (typeof proto !== 'object' && typeof proto !== 'function') {
-      throw new TypeError('继承的必须为对象或者函数！')
-    } else if (proto === null) {
-      throw new Error('该浏览器不支持null属性的继承！')
-    }
-
-    if (typeof propertiesObject !== 'undefined') {
-      throw new Error('该浏览器不支持此方法设置第二个参数！')
-    }
-
-    function F() {}
-    F.prototype = proto
-
-    return new F()
-  }
+Audi.prototype.showPrice = function () {
+  console.log(this.price)
 }
+
+// ===== 实例继承（寄生组合式） ===== 
 // 推荐，es6式继承方法
 // 等同于 Object.setPrototypeOf(Audi.prototype, Car.prototype)
 Audi.prototype = Object.create(Car.prototype)
 Audi.prototype.constructor = Audi
-// 不建议使用 Audi.prototype = new Car()
-// 不建议使用 Audi.prototype = Car.prototype
+// 不建议使用 Audi.prototype = new Car() 或者 Audi.prototype = Car.prototype
 
-Audi.prototype.showPrice = function () {
-  console.log(this.price)
-}
+// ===== 类的静态属性继承 ===== 
+Object.setPrototypeOf(Audi, Car)
+
 ```
 
-#### `es6`写法
+### `es6`写法
 
 - 继承时注意实现`super`
 - `static`为类方法
@@ -119,7 +87,7 @@ class Audi extends Car {
 }
 ```
 
-#### new的实现
+## new
 1. 创建空对象
 2. 链接原型链
 3. 执行构造函数
@@ -148,9 +116,9 @@ const _new2 = (Constructor, ...args) => {
 };
 ```
 
-### `Promise`
+## `Promise`
 
-#### `all`
+### `all`
 
 都成功才能拿进入结果函数，`arr`数组里面是`p1, p2`的返回值数组。
 
@@ -164,7 +132,7 @@ Promise
   })
 ```
 
-#### `race`
+### `race`
 
 谁最快返回谁
 
@@ -186,7 +154,7 @@ function* show() {
 }
 ```
 
-#### 利用`runner`函数进行带逻辑的异步请求
+### 利用`runner`函数进行带逻辑的异步请求
 
 ```javascript
 function runner(_gen) {
@@ -238,12 +206,12 @@ runner(function*() {
 })
 ```
 
-#### 与`async/await`区别
+### 与`async/await`区别
 
 - 写法一样，还不需要`runner`函数
 - 还可以写成箭头函数。
 
-### 正则表达式
+## 正则表达式
 
 #### 常用基础知识
 
@@ -506,6 +474,31 @@ console.log(a.x) // ???
 所以上述答案为`undefined`
 
 ## Array
+### Array.prototype.map
+内部原理：
+- 提前预知并确定循环长度
+- 执行时
+  - 元素为empty，不进行方法调用，并在返回值中设为empty
+  - 元素不为empty，获取此刻原数组的元素值，执行方法调用
+
+> 使用 map 方法处理数组时，数组元素的范围是在 callback 方法第一次调用之前就已经确定了。在 map 方法执行的过程中：原数组中新增加的元素将不会被 callback 访问到；若已经存在的元素被改变或删除了，则它们的传递到 callback 的值是 map 方法遍历到它们的那一时刻的值；而被删除的元素将不会被访问到。 —— MDN https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/map
+
+### Array.prototype.reduce
+传入函数的a，b值并不是数组的每一项，准确的讲，分别为累加器与当前项，有2种情况：
+- 设定了初始值，第1次循环，累加器值为初始值
+- 未设定初始值，第1次循环，累加器值为第1项，且从数组第2项开始循环
+
+综上，应避免以下错误：
+``` javascript
+// ❌ 报错
+const arr = [] //一定要确定数组不为空
+arr.reduce((a, b) => a + b)
+
+// ❌ 结果为NaN
+const arr = [{ price: 1 }, { price: 2 }]
+arr.reduce((a, b) => a.price + b.price, 0)
+```
+
 ### empty
 使用`delete arr[i]`，原数组的下标并不会改变，而是在原来的下边出，把值设为empty，此值有一定的特殊性。
 ``` javascript
@@ -536,3 +529,31 @@ console.log(`filteredArr ${filteredArr}`, filteredArr);
 
 ### async/await
 注意for循环（循环之间会等待）与forEach（不会等待）调用的不同。
+
+### 稀疏与密集数组
+稀疏数组即非连续性数组，里面有空元素，这在使用数组方法（map,forEach等）时不会遍历该元素。
+
+快速创建密集数组：
+``` javascript
+//
+const arr = Array.apply(null, Array(3))
+// [undefined, undefined, undefined]
+
+// 扩展应用
+const arr = Array.apply(null, Array(5))
+
+arr.map(Function.prototype.call.bind(Number))
+arr.map(Function.prototype.call, Number)
+// 等同于下面
+arr.map((v, i, array) => {
+  return Number.call(v, i, array)
+})
+// [1, 2, 3, 4, 5]
+// ？？？为什么这样不行，arr.map(Number.call)
+```
+
+## Object
+### `Object.is`
+与`===`区别：
+- `+0` 与 `-0`，`===`返回true，Object.is返回false
+- `NaN`与`NaN`，`===`返回false，Object.is返回true
