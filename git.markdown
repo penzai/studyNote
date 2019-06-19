@@ -47,8 +47,10 @@ git commit --amend
 
 ### branch
 
+- `git branch -a` 查看远程分支
 - `git branch -vv` 可查看各个分支与远程分支的关联情况。
 - `git checkout -b 新分支名字` 新建并切换到该分支
+- `git checkout -b 新分支名字 远程服务器/远程分支` 新拉取远程分支并切换到该分支
 > 新分支上传到远程，直接`git push origin 新的本地分支名字`
 - `git branch -D 本地分支名字` 删除本地分支
 - `git push orgin :远程分支名字` 删除远端分支
