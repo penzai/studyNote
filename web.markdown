@@ -4,20 +4,18 @@
 - `URI` (Uniform Resource Identifier) 统一资源标识符
 - `URL` (Uniform Resource Locator) 统一资源定位符
 - `HTML` (HyperText Markup Language) 超文本标记语言
+- `HTTP` (HyperText Transfer Protocol) 超文本状态转移协议
+- `FTP` (File Transfer Protocol) 文件传输协议
+- `DNS` (Domain Name System) 域名系统
+- `TCP` (Transmission Control Protocol) 传输控制协议
+- `UDP` (User Data Protocol) 用户数据报协议
 - `MAC` (Media Access Control Address) 网卡固定地址
 - `ARP` (Address Resolution Protocol) 解析地址的协议（根据通信方的IP地址反查出对应的MAC地址）
 - `REST` (Representational State Transfer) 表征状态转移
 - `SSL` (Secure Sockets Layer) 安全套接层
 - `TLS` (Transport Layer Security) 传输层安全
+- `Dos` (Denial of Service) 拒绝服务攻击
 
-### 应用层
-- `HTTP` (HyperText Transfer Protocol) 超文本状态转移协议
-- `FTP` (File Transfer Protocol) 文件传输协议
-- `DNS` (Domain Name System) 域名系统
-
-### 传输层
-- `TCP` (Transmission Control Protocol) 传输控制协议
-- `UDP` (User Data Protocol) 用户数据报协议
 
 ## 尺寸
 - `clientWidth/clientHeight`：`padding` + `content`
@@ -49,6 +47,21 @@ decodeURIComponent('http%3A%2F%2Fwww.baidu.com%2FMy%20First')
 - C --(ACK)--> S
 - C --(FIN)--> S
 - C <--(ACK)--> S
+
+## 跨域
+三同条件：
+
+1. 协议相同
+2. 域名相同
+> 完整域名，例如www.baidu.com与baidu.com不同！！！
+3. 端口相同
+
+### 解决办法
+- JSONP
+- window.name
+- document.domain
+- window.postMessage
+- CORS
 
 ## 疑问
 - PUT DELETE方法为什么不常用，不带验证机制什么意思？

@@ -1,5 +1,7 @@
 # `JS`标准
-### `bind`方法
+
+## `bind`方法
+
 - 语法`fun.bind(thisArg[, arg1[, arg2[, ...]]])`
 - 此方法会产生一个**新方法**，所以原方法改变了,它依然存在
 - `bind`传递的参数优先级比原函数高，且后来的参数是紧跟着`bind`参数的后面，而不是对位取代
@@ -29,10 +31,10 @@ function Car(name, color) {
   this.name = name
   this.color = color
 }
-Car.prototype.showName = function () {
+Car.prototype.showName = function() {
   console.log(this.name)
 }
-Car.say = function () {
+Car.say = function() {
   console.log('I am car.')
 }
 
@@ -41,20 +43,19 @@ function Audi(name, color, price) {
   Car.call(this, name, color)
   this.price = price
 }
-Audi.prototype.showPrice = function () {
+Audi.prototype.showPrice = function() {
   console.log(this.price)
 }
 
-// ===== 实例继承（寄生组合式） ===== 
+// ===== 实例继承（寄生组合式） =====
 // 推荐，es6式继承方法
 // 等同于 Object.setPrototypeOf(Audi.prototype, Car.prototype)
 Audi.prototype = Object.create(Car.prototype)
 Audi.prototype.constructor = Audi
 // 不建议使用 Audi.prototype = new Car() 或者 Audi.prototype = Car.prototype
 
-// ===== 类的静态属性继承 ===== 
+// ===== 类的静态属性继承 =====
 Object.setPrototypeOf(Audi, Car)
-
 ```
 
 ### `es6`写法
@@ -88,32 +89,33 @@ class Audi extends Car {
 ```
 
 ## new
+
 1. 创建空对象
 2. 链接原型链
 3. 执行构造函数
-4. 根据步骤3的结果类型返回不同的值
+4. 根据步骤 3 的结果类型返回不同的值
 
-``` javascript
+```javascript
 // es5
 var _new = function() {
-  var Constructor = [].shift.call(arguments);
-  if (typeof Constructor !== "function") {
-    throw new Error("请传入正确的构造函数");
+  var Constructor = [].shift.call(arguments)
+  if (typeof Constructor !== 'function') {
+    throw new Error('请传入正确的构造函数')
   }
-  var instance = Object.create(Constructor.prototype);
-  var ret = Constructor.apply(instance, arguments);
-  return ret instanceof Object ? ret : instance;
-};
+  var instance = Object.create(Constructor.prototype)
+  var ret = Constructor.apply(instance, arguments)
+  return ret instanceof Object ? ret : instance
+}
 
 // es6
 const _new2 = (Constructor, ...args) => {
-  if (typeof Constructor !== "function") {
-    throw new Error("请传入正确的构造函数");
+  if (typeof Constructor !== 'function') {
+    throw new Error('请传入正确的构造函数')
   }
-  const instance = Object.create(Constructor.prototype);
-  const ret = Constructor.apply(instance, args);
-  return ret instanceof Object ? ret : instance;
-};
+  const instance = Object.create(Constructor.prototype)
+  const ret = Constructor.apply(instance, args)
+  return ret instanceof Object ? ret : instance
+}
 ```
 
 ## `Promise`
@@ -178,7 +180,11 @@ function runner(_gen) {
             }
           )
         } else if (typeof obj == 'function') {
-          if (obj.constructor.toString().startsWith('function GeneratorFunction()')) {
+          if (
+            obj.constructor
+              .toString()
+              .startsWith('function GeneratorFunction()')
+          ) {
             runner(obj).then(res => _next(res), reject)
           } else {
             _next(obj())
@@ -213,12 +219,12 @@ runner(function*() {
 
 ## 正则表达式
 
-#### 常用基础知识
+### 常用基础知识
 
 - `.`匹配非换行符 (`s`模式可以让`.`匹配换行符)
 - `/s`匹配空白符（换行、制表等）`[ \f\n\r\t\v]`
 
-#### 贪婪模式
+### 贪婪模式
 
 .\*代表匹配任意次的非换行符字符。它是一个贪婪匹配，非贪婪如下
 
@@ -228,7 +234,7 @@ runner(function*() {
 - `{n,m}?` 重复 n 到 m 次，但尽可能少重复
 - `{n,}?` 重复 n 次以上，但尽可能少重复
 
-#### 分组
+### 分组
 
 匹配下面一个字符
 
@@ -240,6 +246,10 @@ runner(function*() {
 ```
 /(?<!\\)('|"|`).*?\/\/.*?(?<!\\)\1/mg
 ```
+
+### 计算匹配结果
+
+match、exec、test 方法
 
 ### 事件循环`event loop`
 
@@ -372,24 +382,11 @@ fetch(url, {
 - `cookie` 传递
 - `404`、`503` 等错误不被认为是网络错误，是不会抛错的。在中间件里用 `reponse.ok` 与 `response.status` 来确定处理
 
-### 对象循环
-#### for in
-含继承，不含symbol属性，可枚举属性
-#### Object.keys()
-不含继承，不含symbol属性，可枚举属性
-#### Object.getOwnPropertyNames()
-含继承，不含symbol属性，可枚举与不可枚举属性
-#### Reflect.ownKeys()
-以上所有
-
-以上的 5 种方法遍历对象的键名，都遵守同样的属性遍历的次序规则。
-- 首先遍历所有数值键，按照数值升序排列。
-- 其次遍历所有字符串键，按照加入时间升序排列。
-- 最后遍历所有 Symbol 键，按照加入时间升序排列。
-
 ### 冒泡排序
+
 #### 基础写法
-``` javascript
+
+```javascript
 const bubbleSortByASC = arr => {
   for (let i = 0; i < arr.length; i++) {
     for (let j = 0; j < arr.length - i - 1; j++) {
@@ -398,98 +395,113 @@ const bubbleSortByASC = arr => {
   }
 }
 ```
-#### 优化1：外层轮回次数优化
+
+#### 优化 1：外层轮回次数优化
+
 当一轮没进行任何交换时，已是有序状态，不再轮回排序
-``` javascript
+
+```javascript
 const bubbleSortByASC = arr => {
   for (let i = 0; i < arr.length; i++) {
     let isSorted = true
     for (let j = 0; j < arr.length - i - 1; j++) {
       if (arr[j] > arr[j + 1]) {
-        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]]
+        ;[arr[j], arr[j + 1]] = [arr[j + 1], arr[j]]
         isSorted = false
       }
     }
-    if(isSorted) {
+    if (isSorted) {
       break
     }
   }
 }
 ```
-#### 优化2：找出有序边界
-每轮回一次，尽量缩小无序数组的范围
-``` javascript
-const bubbleSortByASC = arr => {
-// 上次交换位置
-let lastExchangeIndex = 0
-// 无序数组边界，即在这个范围内进行两两比较
-let sortBorder = arr.length - 1
 
-for (let i = 0; i < arr.length; i++) {
-  let isSorted = true
-  for (let j = 0; j < sortBorder; j++) {
-    if (arr[j] > arr[j + 1]) {
-      [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]]
-      // 设false，说明这一轮进行了交换，是无序的
-      isSorted = false
-      // 每次更新交换位置
-      lastExchangeIndex = j
+#### 优化 2：找出有序边界
+
+每轮回一次，尽量缩小无序数组的范围
+
+```javascript
+const bubbleSortByASC = arr => {
+  // 上次交换位置
+  let lastExchangeIndex = 0
+  // 无序数组边界，即在这个范围内进行两两比较
+  let sortBorder = arr.length - 1
+
+  for (let i = 0; i < arr.length; i++) {
+    let isSorted = true
+    for (let j = 0; j < sortBorder; j++) {
+      if (arr[j] > arr[j + 1]) {
+        ;[arr[j], arr[j + 1]] = [arr[j + 1], arr[j]]
+        // 设false，说明这一轮进行了交换，是无序的
+        isSorted = false
+        // 每次更新交换位置
+        lastExchangeIndex = j
+      }
+    }
+    // 这一轮的最后交换位置即为有序数组与无序数组的分界
+    // lastExchangeIndex属于无序数组
+    sortBorder = lastExchangeIndex
+    // 这一轮没进行任何交换，即已是有序数组，跳出，不再轮回
+    if (isSorted) {
+      break
     }
   }
-  // 这一轮的最后交换位置即为有序数组与无序数组的分界
-  // lastExchangeIndex属于无序数组
-  sortBorder = lastExchangeIndex
-  // 这一轮没进行任何交换，即已是有序数组，跳出，不再轮回
-  if(isSorted) {
-    break
-  }
-}
 }
 ```
 
-
 #### 一直认为的错误版本（虽然也能排序）
-``` javascript
+
+```javascript
 const sort = arr => {
   for (let i = 0; i < arr.length; i++) {
     for (let j = i + 1; j < arr.length; j++) {
       if (arr[i] < arr[j]) {
-        [arr[i], arr[j]] = [arr[j], arr[i]]
+        ;[arr[i], arr[j]] = [arr[j], arr[i]]
       }
     }
   }
 }
 ```
+
 ### 连等赋值
+
 一道”面试“题
-``` javascript
+
+```javascript
 var a = { n: 1 }
 a.x = a = { n: 2 }
-console.log(a.x) // ??? 
+console.log(a.x) // ???
 ```
 
 - 连等赋值会提前保存对象的引用，复制时右边取新的，左边取提前保存的。
-- A=B=C的调用过程其实是B=C，再执行A=B，注意C值只调用一次（可用getter进行测试）
+- A=B=C 的调用过程其实是 B=C，再执行 A=B，注意 C 值只调用一次（可用 getter 进行测试）
 
 所以上述答案为`undefined`
 
 ## Array
+
 ### Array.prototype.map
+
 内部原理：
+
 - 提前预知并确定循环长度
 - 执行时
-  - 元素为empty，不进行方法调用，并在返回值中设为empty
-  - 元素不为empty，获取此刻原数组的元素值，执行方法调用
+  - 元素为 empty，不进行方法调用，并在返回值中设为 empty
+  - 元素不为 empty，获取此刻原数组的元素值，执行方法调用
 
 > 使用 map 方法处理数组时，数组元素的范围是在 callback 方法第一次调用之前就已经确定了。在 map 方法执行的过程中：原数组中新增加的元素将不会被 callback 访问到；若已经存在的元素被改变或删除了，则它们的传递到 callback 的值是 map 方法遍历到它们的那一时刻的值；而被删除的元素将不会被访问到。 —— MDN https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/map
 
 ### Array.prototype.reduce
-传入函数的a，b值并不是数组的每一项，准确的讲，分别为累加器与当前项，有2种情况：
-- 设定了初始值，第1次循环，累加器值为初始值
-- 未设定初始值，第1次循环，累加器值为第1项，且从数组第2项开始循环
+
+传入函数的 a，b 值并不是数组的每一项，准确的讲，分别为累加器与当前项，有 2 种情况：
+
+- 设定了初始值，第 1 次循环，累加器值为初始值
+- 未设定初始值，第 1 次循环，累加器值为第 1 项，且从数组第 2 项开始循环
 
 综上，应避免以下错误：
-``` javascript
+
+```javascript
 // ❌ 报错
 const arr = [] //一定要确定数组不为空
 arr.reduce((a, b) => a + b)
@@ -500,41 +512,46 @@ arr.reduce((a, b) => a.price + b.price, 0)
 ```
 
 ### empty
-使用`delete arr[i]`，原数组的下标并不会改变，而是在原来的下边出，把值设为empty，此值有一定的特殊性。
-``` javascript
-const arr = [1, 2, 3, 4, 5];
-arr[1] = undefined;
-delete arr[3];
-console.log("changed : ", arr);
+
+使用`delete arr[i]`，原数组的下标并不会改变，而是在原来的下边出，把值设为 empty，此值有一定的特殊性。
+
+```javascript
+const arr = [1, 2, 3, 4, 5]
+arr[1] = undefined
+delete arr[3]
+console.log('changed : ', arr)
 
 // for (不跳过任意)
 for (let i = 0; i < arr.length; i++) {
-  console.log(`for ${arr[i]}`);
+  console.log(`for ${arr[i]}`)
 }
 
 // map（跳过empty，返回结果包含empty）
 const mapedArr = arr.map(v => {
-  console.log(`map ${v}`);
-  return "hello";
-});
-console.log(`mapedArr ${mapedArr}`, mapedArr);
+  console.log(`map ${v}`)
+  return 'hello'
+})
+console.log(`mapedArr ${mapedArr}`, mapedArr)
 // filter（跳过empty，返回结果不包含empty）
-arr.forEach(v => console.log(`forEach ${v}`));
+arr.forEach(v => console.log(`forEach ${v}`))
 const filteredArr = arr.filter(v => {
-  console.log(`filter ${v}`);
-  return true;
-});
-console.log(`filteredArr ${filteredArr}`, filteredArr);
+  console.log(`filter ${v}`)
+  return true
+})
+console.log(`filteredArr ${filteredArr}`, filteredArr)
 ```
 
 ### async/await
-注意for循环（循环之间会等待）与forEach（不会等待）调用的不同。
+
+注意 for 循环（循环之间会等待）与 forEach（不会等待）调用的不同。
 
 ### 稀疏与密集数组
-稀疏数组即非连续性数组，里面有空元素，这在使用数组方法（map,forEach等）时不会遍历该元素。
+
+稀疏数组即非连续性数组，里面有空元素，这在使用数组方法（map,forEach 等）时不会遍历该元素。
 
 快速创建密集数组：
-``` javascript
+
+```javascript
 //
 const arr = Array.apply(null, Array(3))
 // [undefined, undefined, undefined]
@@ -553,7 +570,71 @@ arr.map((v, i, array) => {
 ```
 
 ## Object
+
 ### `Object.is`
+
 与`===`区别：
-- `+0` 与 `-0`，`===`返回true，Object.is返回false
-- `NaN`与`NaN`，`===`返回false，Object.is返回true
+
+- `+0` 与 `-0`，`===`返回 true，Object.is 返回 false
+- `NaN`与`NaN`，`===`返回 false，Object.is 返回 true
+
+### `Object.defineProperty`
+
+新增或者修改一个对象的一个属性，并返回这个对象。语法为`Object.defineProperty(obj, prop, descriptor)`。
+
+其中descriptor分为如下：
+- 公共描述符
+  - `configurable`(false)能否配置以及删除
+  - `enumerable`(false) 能否枚举
+- 择其一
+  - data scriptors
+    - `value`(undefined)
+    - `writable`(false) 能否被赋值运算符改变
+  - accessor descriptors
+    - `get`(undefined)
+    - `set`(undefined)
+
+### 对象循环
+
+#### for in
+
+含继承，不含 symbol 属性，可枚举属性
+
+#### Object.keys()
+
+不含继承，不含 symbol 属性，可枚举属性
+
+#### Object.getOwnPropertyNames()
+
+含继承，不含 symbol 属性， 可枚举与不可枚举属性
+
+#### Reflect.ownKeys()
+
+以上  所有
+
+以上的几种方法遍历对象的键名，都遵守同样的属性遍历的次序规则。
+
+- 首先遍历所有数值键，按照数值升序排列。
+- 其次遍历所有字符串键，按照加入时间升序排列。
+- 最后遍历所有 Symbol 键，按照加入时间升序排列。
+
+## 数据转换为规则
+
+### ToPrimitive
+
+#### string
+
+调用 toString 方法：
+
+- 原始值，强转 string 后的原始值
+- 非原始值，调用 valueOf 方法
+  - 原始值，强转 string 后的原始值
+  - 非原始值，抛出异常`TypeError: Cannot convert object to primitive value`
+
+#### number
+
+调用 valueOf 方法：
+
+- 原始值，return 强转 number 后的原始值
+- 非原始值，调用 toString 方法 - 原始值，return 强转 number 后的原始值 - 非原始值，抛出异常`TypeError: Cannot convert object to primitive value`
+  > 强转 number 规则，null -> 0，undefined -> NaN，true -> 1，false -> 0，失败 -> NaN
