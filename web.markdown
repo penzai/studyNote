@@ -58,10 +58,10 @@ decodeURIComponent('http%3A%2F%2Fwww.baidu.com%2FMy%20First')
 
 ### 解决办法
 - JSONP
-- window.name
-- document.domain
-- window.postMessage
 - CORS
+- document.domain
+- window.name
+- window.postMessage
 
 ## 疑问
 - PUT DELETE方法为什么不常用，不带验证机制什么意思？
