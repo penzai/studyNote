@@ -80,3 +80,38 @@ modules: {
 - 匹配路由时，当匹配到第一个时，就停止。
 - 同时设置`redirect`和`{ children: { path: '' }}`时，将无视前者。
   > 先匹配后计算
+
+## echarts
+1. 使用this.$refs.xxx获取dom，而不使用document.getElementById('xxx)
+
+2. 图表的chart.resize()功能提取为单独函数，使用resize-detector库的addListener进行绑定和removeListener取消绑绑定，且使用debounce进行防抖处理(可在created生命周期里对vue组件的methods中的方法进行改造)
+
+3. 不要忘记在beforeDestroy生命周期里解绑事件，以及使用chart.dispose()图表
+
+## mock
+``` javascript
+ proxy: {
+    "/api": {
+      target: "http://localhost:3000"
+      bypass: function(req, res) {
+        if (req.headers.accept.indexOf("html") !== -1) {
+          console.log("Skipping proxy for browser request.");
+          return "/index.html";
+        } else if (process.env.MOCK !== "none") {
+          console.log(req.path);
+          const name = req.path
+            .split("/api/")[1]
+            .split("/")
+            .join("_");
+          const mock = require(`./mock/${name}`);
+          const result = mock(req);
+          delete require.cache[require.resolve(`./mock/${name}`)];
+          return res.send(result);
+        }
+        return false;
+      }
+    }
+  }
+}
+```
+
