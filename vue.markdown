@@ -1,8 +1,3 @@
-## 疑问???
-
-- Slot 存数据
-- 跨组件获取组件实例（provide 为对象和返回对象函数的区别，前者不能获取到 this）
-
 ## 生命周期
 
 ### 创建阶段
@@ -28,6 +23,11 @@
 
 - `beforeDestroy`
 - `destroyed`
+
+## 插槽
+- slot 合并
+- v-slot 替换
+- slot + slot-scope 替换
 
 ## 函数式组件
 
