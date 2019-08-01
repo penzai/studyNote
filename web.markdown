@@ -1,4 +1,4 @@
-## 术语缩写
+c## 术语缩写
 - `WWW` (Word Wide Web) 万维网
 - `AJAX` (Asynchronous JavaScript and XML)
 - `URI` (Uniform Resource Identifier) 统一资源标识符
@@ -15,6 +15,7 @@
 - `SSL` (Secure Sockets Layer) 安全套接层
 - `TLS` (Transport Layer Security) 传输层安全
 - `Dos` (Denial of Service) 拒绝服务攻击
+- `CDN` (Content Delivery Network) 内容分发网络
 
 
 ## 尺寸
@@ -63,5 +64,29 @@ decodeURIComponent('http%3A%2F%2Fwww.baidu.com%2FMy%20First')
 - window.name
 - window.postMessage
 
+## 从URL输入开始
+### dns解析
+通过域名找寻ip地址
+#### 顺序
+1. 浏览器缓存
+2. 系统缓存
+3. host文件
+4. LocalDNS服务器
+  - a. 请求根域名服务器（RootDNS），得到主域名服务器（ gTLDServer）地址
+  - b. 请求主域名服务器（ gTLDServer），如 .com、 .cn、. org等，得到域名提供商服务器地址（NameServer）
+  - c. 请求域名提供商服务器地址（NameServer），如`xxx.com`，至此获得IP和TTL值
+> dns缓存存在多级，例如浏览器缓存、系统缓存、路由器缓存、IPS服务器缓存、根域名服务器缓存、顶级域名服务器缓存、主域名服务器缓存。
+#### 优化
+- 减少 DNS的请求次数
+- DNS预解析
+  ``` html
+  <meta http-equiv="x-dns-prefetch-control" content="on" />
+  <link rel="dns-prefetch" href="//example.com">
+  ```
+- CDN，通过在现有的 Internet中增加一层新的 CACHE(缓存)层，将网站的内容发布到最接近用户的网络”边缘“的节点
+- HTTPDNS，使用HTTP协议替代UDP协议，绕过LocalDNS，可以有效防止域名劫持
+- DNS负载均衡（根据权重轮询返回不同的服务器地址）
+
 ## 疑问
 - PUT DELETE方法为什么不常用，不带验证机制什么意思？
+- CDN具体是怎么应用的
