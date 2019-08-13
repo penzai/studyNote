@@ -1,4 +1,4 @@
-c## 术语缩写
+## 术语缩写
 - `WWW` (Word Wide Web) 万维网
 - `AJAX` (Asynchronous JavaScript and XML)
 - `URI` (Uniform Resource Identifier) 统一资源标识符
@@ -17,6 +17,11 @@ c## 术语缩写
 - `Dos` (Denial of Service) 拒绝服务攻击
 - `CDN` (Content Delivery Network) 内容分发网络
 
+## DOM
+三种节点：
+- document，最外层，html之上，只有一个唯一子元素html
+- 元素节点
+- 文本节点
 
 ## 尺寸
 - `clientWidth/clientHeight`：`padding` + `content`
@@ -26,6 +31,21 @@ c## 术语缩写
 - `scrollWidth/scrollHeight`: `client`系列 + 溢出尺寸
 - `scrollLeft/scrollTop`: 元素滚动条位置，**可写**(即调整滚动条位置，整个网页的滚动条位置用`window.scrollTo(x, y)`)
 > `getBoundingClientRect`获取元素位置宽高
+
+### 懒加载图片
+ 实现原理：元素的offsetTop < 页面的scrollTop + 页面的clientHeight
+
+ 元素offsetTop的获取：
+ ``` javascript
+ function getH(el) {
+   var h = 0
+   while(el) {
+     h += el.offsetTop
+     el = el.offsetParent
+   }
+   return h
+ }
+ ```
 
 ## 编码与解码
 `encodeURI`、`decodeURI`、`encodeURIComponent`、`decodeURIComponent`
