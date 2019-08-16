@@ -1,4 +1,9 @@
-# `JS`标准
+## 类型判断
+- typeof操作符： 简单判断类型，无法区分例如数组与对象、null与对象。
+- instanceof操作符/isPrototypeOf()： 测试实例与原型链中**出现过**的构造函数。
+> 当构造函数返回的是引用类型时，无法判断。
+- Object.prototype.toString.call(obj)
+- obj.hasOwnProperty(key) 判断obj实例有没有key属性
 
 ## `bind`方法
 
@@ -6,9 +11,101 @@
 - 此方法会产生一个**新方法**，所以原方法改变了,它依然存在
 - `bind`传递的参数优先级比原函数高，且后来的参数是紧跟着`bind`参数的后面，而不是对位取代
 
-## `class`
+## Object
 
-### 基础知识
+### `Object.is`
+
+与`===`区别：
+
+- `+0` 与 `-0`，`===`返回 true，Object.is 返回 false
+- `NaN`与`NaN`，`===`返回 false，Object.is 返回 true
+
+### `Object.defineProperty`
+
+新增或者修改一个对象的一个属性，并返回这个对象。语法为`Object.defineProperty(obj, prop, descriptor)`。
+
+其中descriptor分为如下：
+- 公共描述符
+  - `configurable`(false)能否配置以及删除
+  - `enumerable`(false) 能否枚举
+- 择其一
+  - data scriptors
+    - `value`(undefined)
+    - `writable`(false) 能否被赋值运算符改变
+  - accessor descriptors
+    - `get`(undefined)
+    - `set`(undefined)
+
+### 对象循环
+
+#### for in
+
+含继承，不含 symbol 属性，可枚举属性
+
+#### Object.keys()
+
+不含继承，不含 symbol 属性，可枚举属性
+
+#### Object.getOwnPropertyNames()
+
+含继承，不含 symbol 属性， 可枚举与不可枚举属性
+
+#### Reflect.ownKeys()
+
+以上  所有
+
+以上的几种方法遍历对象的键名，都遵守同样的属性遍历的次序规则。
+
+- 首先遍历所有数值键，按照数值升序排列。
+- 其次遍历所有字符串键，按照加入时间升序排列。
+- 最后遍历所有 Symbol 键，按照加入时间升序排列。
+
+### 继承
+最好的继承的特点：
+- 能给超类构造函数传参
+- 拥有共享方法
+- constructor能正确指向
+#### 原型链继承
+``` javascript
+function SubType() {}
+SubType.prototype = new SuperType()
+```
+#### 借用构造函数继承（constructor stealing）
+``` javascript
+function SubType() {
+  SuperType.call(this)
+}
+```
+#### 组合继承（conbination inheritance）
+结合原型链继承与借用构造函数继承。
+#### 原型式继承（prototypal inheritance）
+即es5的Object.create()方法。需要一个基础对象，来创建另一个类似的对象。
+``` javascript
+function object(o) {
+  function F() {}
+  F.prototype = o
+  return new F()
+}
+```
+#### 寄生式继承（parasitic inheritance）
+创建一个仅用于封装继承过程的函数，该函数在内部以某种方式来增强对象。
+``` javascript
+function createAnother(original) {
+  var clone = object(original)
+  clone.sayHi = function() {
+    alert('hi')
+  }
+  return clone
+}
+```
+#### 寄生组合式继承
+通过借用构造函数来继承属性，使用寄生式继承来继承超类的原型。
+``` javascript
+SubType.prototype = object(SuperType.prototype);
+SubType.prototype.constructor = SubType
+```
+
+### 原型链关系表
 
 - 函数拥有`prototype`属性，而任意对象拥有原型`__proto__`。
 - 所谓的原型链其实是指`__proto__`与`prototype`的从属关系
@@ -18,77 +115,9 @@
   - `Object.prototype.__proto__ === null`
   - 一层特殊的关系：`Object.__proto__ === Function.prototype`
 
-![](img/7-11-1.png)
 ![http://www.mollypages.org/tutorials/js.mp](img/js-standard/jsobj_full.jpg)
 
-### `es5`写法
-
-> 注意继承方法，即设置`prototype`
-
-```javascript
-// Car类 - 父类
-function Car(name, color) {
-  this.name = name
-  this.color = color
-}
-Car.prototype.showName = function() {
-  console.log(this.name)
-}
-Car.say = function() {
-  console.log('I am car.')
-}
-
-// Audi - 子类
-function Audi(name, color, price) {
-  Car.call(this, name, color)
-  this.price = price
-}
-Audi.prototype.showPrice = function() {
-  console.log(this.price)
-}
-
-// ===== 实例继承（寄生组合式） =====
-// 推荐，es6式继承方法
-// 等同于 Object.setPrototypeOf(Audi.prototype, Car.prototype)
-Audi.prototype = Object.create(Car.prototype)
-Audi.prototype.constructor = Audi
-// 不建议使用 Audi.prototype = new Car() 或者 Audi.prototype = Car.prototype
-
-// ===== 类的静态属性继承 =====
-Object.setPrototypeOf(Audi, Car)
-```
-
-### `es6`写法
-
-- 继承时注意实现`super`
-- `static`为类方法
-
-```javascript
-class Car {
-  constructor(name, color) {
-    this.name = name
-    this.color = color
-  }
-  showName() {
-    console.log(this.name)
-  }
-  static say() {
-    console.log('I am car.')
-  }
-}
-
-class Audi extends Car {
-  constructor(name, color, price) {
-    super(name, color)
-    this.price = price
-  }
-  showPrice() {
-    console.log(this.price)
-  }
-}
-```
-
-## new
+### new
 
 1. 创建空对象
 2. 链接原型链
@@ -96,7 +125,6 @@ class Audi extends Car {
 4. 根据步骤 3 的结果类型返回不同的值
 
 ```javascript
-// es5
 var _new = function() {
   var Constructor = [].shift.call(arguments)
   if (typeof Constructor !== 'function') {
@@ -104,16 +132,6 @@ var _new = function() {
   }
   var instance = Object.create(Constructor.prototype)
   var ret = Constructor.apply(instance, arguments)
-  return ret instanceof Object ? ret : instance
-}
-
-// es6
-const _new2 = (Constructor, ...args) => {
-  if (typeof Constructor !== 'function') {
-    throw new Error('请传入正确的构造函数')
-  }
-  const instance = Object.create(Constructor.prototype)
-  const ret = Constructor.apply(instance, args)
   return ret instanceof Object ? ret : instance
 }
 ```
@@ -262,8 +280,10 @@ p本身并不是匹配结果，它只是匹配的条件。例如你要匹配的�
 
 match、exec、test 方法
 
-## 事件循环`event loop`
-
+## 事件
+### 事件流
+捕获 -> 本体 -> 冒泡，其中`dom.onclick = function () {}`为冒泡阶段，`addEventListener`根据useCapture参数来定（默认false，即冒泡阶段），但是本体不区分捕获或者冒泡，按照事件定义顺序执行。
+### 事件循环event loop
 - 主进程（即整体代码）属于`macrotasks`（`tasks`）。待执行完毕才会去寻找`microtask` (主动使用`.click()`触发事件，不属于异步！此时并没结束主进程，所以如果有事件冒泡，这时会先冒完，而且此时`MutationObserver`处于`pending`状态，无法多次实现)
 - `js`通过事件循环（`event loop`）机制来定期访问异步任务队列
 - `macroTasks`的任务，一次循环只处理一次（比如嵌套`setTimeout`)，而`microtask`队列能处理多次（比如`Promise`的`then`回调）
@@ -580,54 +600,7 @@ arr.map((v, i, array) => {
 // ？？？为什么这样不行，arr.map(Number.call)
 ```
 
-## Object
 
-### `Object.is`
-
-与`===`区别：
-
-- `+0` 与 `-0`，`===`返回 true，Object.is 返回 false
-- `NaN`与`NaN`，`===`返回 false，Object.is 返回 true
-
-### `Object.defineProperty`
-
-新增或者修改一个对象的一个属性，并返回这个对象。语法为`Object.defineProperty(obj, prop, descriptor)`。
-
-其中descriptor分为如下：
-- 公共描述符
-  - `configurable`(false)能否配置以及删除
-  - `enumerable`(false) 能否枚举
-- 择其一
-  - data scriptors
-    - `value`(undefined)
-    - `writable`(false) 能否被赋值运算符改变
-  - accessor descriptors
-    - `get`(undefined)
-    - `set`(undefined)
-
-### 对象循环
-
-#### for in
-
-含继承，不含 symbol 属性，可枚举属性
-
-#### Object.keys()
-
-不含继承，不含 symbol 属性，可枚举属性
-
-#### Object.getOwnPropertyNames()
-
-含继承，不含 symbol 属性， 可枚举与不可枚举属性
-
-#### Reflect.ownKeys()
-
-以上  所有
-
-以上的几种方法遍历对象的键名，都遵守同样的属性遍历的次序规则。
-
-- 首先遍历所有数值键，按照数值升序排列。
-- 其次遍历所有字符串键，按照加入时间升序排列。
-- 最后遍历所有 Symbol 键，按照加入时间升序排列。
 
 ## 数据转换为规则
 
