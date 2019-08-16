@@ -32,6 +32,8 @@
 - `scrollLeft/scrollTop`: 元素滚动条位置，**可写**(即调整滚动条位置，整个网页的滚动条位置用`window.scrollTo(x, y)`)
 > `getBoundingClientRect`获取元素位置宽高
 
+## 图片
+### 优化手段
 ### 懒加载图片
  实现原理：元素的offsetTop < 页面的scrollTop + 页面的clientHeight
 
@@ -110,3 +112,20 @@ decodeURIComponent('http%3A%2F%2Fwww.baidu.com%2FMy%20First')
 ## 疑问
 - PUT DELETE方法为什么不常用，不带验证机制什么意思？
 - CDN具体是怎么应用的
+
+## 缓存
+### 强缓存
+服务端通过cache-control(1.1)和expires(1.0)设置，命中则不发起请求，直接调用磁盘缓存。优先级cache-control > expires。
+
+### 协商缓存
+服务端通过last-modified/if-modified-since组合或者etag/if-none-match组合来判断，前者是服务端设置，后者是客户端请求携带。优先级ETag > Last-Modified。
+
+### 其他缓存
+pragma(1.0)，只有一个唯一值no-cache。优先级pragma > cache-control。
+
+### 用户行为
+我们可以把刷新/访问界面的手段分成三类：
+
+- 在URI输入栏中输入然后回车/通过书签访问。会通过Expires或者Cache-Control判断是否过期，未过期则不发送请求，使用缓存。
+- F5/点击工具栏中的刷新按钮/右键菜单重新加载。始终会发送一个请求，并带上etag或者last-modified的值，以此来决定是否使用缓存。
+- Ctl+F5。彻底拿一份新资源。
