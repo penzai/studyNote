@@ -34,6 +34,12 @@
 
 ## 图片
 ### 优化手段
+- webpack压缩，并开启渐进效果提升体验。
+- 按需加载。使用IntersectionObserver可监听元素进入视野内，使用chrome特有的loading属性。
+- 固定图片设置背景渐变色，用工具获取色值。
+- retina屏幕，img标签使用srcset属性。
+- webP。使用picture标签加载多种格式图片来兼容处理，.webp排第一位。也可以使用cdn判断。
+
 ### 懒加载图片
  实现原理：元素的offsetTop < 页面的scrollTop + 页面的clientHeight
 
