@@ -156,23 +156,11 @@ Promise
 
 谁最快返回谁
 
-### `Generator`
+## `Generator`
+- 一个状态机，内部封装了很多种状态。
+- 此函数会返回一个遍历器对象
 
-中间能停的函数，注意`yield`的前后区别（分别是不同的作用域）。
 
-- 本身返回的是一个`generator`对象
-- 需要用`.next()`方法来调用进行“走”
-- 返回值。在`yield`后面紧跟的对象，返回值为`.next()`的的返回值，为`{value, done}`
-- 输入值为`yield`
-
-```javascript
-function* show() {
-  alert(1)
-  let a = yield 3
-  alert(2)
-  console.log(a) // a = 传入的参数
-}
-```
 
 ### 利用`runner`函数进行带逻辑的异步请求
 
@@ -234,6 +222,9 @@ runner(function*() {
 
 - 写法一样，还不需要`runner`函数
 - 还可以写成箭头函数。
+
+## `Iterator`
+默认的Iterator接口部署在数据结构的Symbol.iterator属性上。
 
 ## 正则表达式
 正则要么匹配字符，要么匹配位置。
@@ -622,3 +613,27 @@ arr.map((v, i, array) => {
 - 原始值，return 强转 number 后的原始值
 - 非原始值，调用 toString 方法 - 原始值，return 强转 number 后的原始值 - 非原始值，抛出异常`TypeError: Cannot convert object to primitive value`
   > 强转 number 规则，null -> 0，undefined -> NaN，true -> 1，false -> 0，失败 -> NaN
+
+## Promise
+灵活运用转Promise对象的接口Promise.resolve()
+### Promise.resolve()
+处理4种情况参数
+- Promise对象，直接返回。
+- thenable对象，该对象then方法里必须使用resolve或者reject，否则Promise.resolve(thenable对象)一直是pending状态
+``` javascript
+const obj = {
+  then: () => {}
+}
+
+Promise.resolve(obj)
+// 等价于
+new Promise(obj.then)
+```
+- 其他值。
+``` javascript
+const obj = {}
+Promise.resolve(obj)
+// 等价于
+new Promise(resolve => resolve(obj))
+```
+- 不传值。等价于Promise(undefined)
