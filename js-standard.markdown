@@ -135,32 +135,33 @@ var _new = function() {
   return ret instanceof Object ? ret : instance
 }
 ```
+## 异步编程
+### Promise
+灵活运用转Promise对象的接口Promise.resolve()
+#### Promise.resolve()
+处理4种情况参数
+- Promise对象，直接返回。
+- thenable对象，该对象then方法里必须使用resolve或者reject，否则Promise.resolve(thenable对象)一直是pending状态
+``` javascript
+const obj = {
+  then: () => {}
+}
 
-## `Promise`
-
-### `all`
-
-都成功才能拿进入结果函数，`arr`数组里面是`p1, p2`的返回值数组。
-
+Promise.resolve(obj)
+// 等价于
+new Promise(obj.then)
 ```
-Promise
-  .all([p1, p2])
-  .then(function (arr) {
-    console.log(arr)
-  }, function (err) {
-    console.log(err)
-  })
+- 其他值。
+``` javascript
+const obj = {}
+Promise.resolve(obj)
+// 等价于
+new Promise(resolve => resolve(obj))
 ```
-
-### `race`
-
-谁最快返回谁
-
-## `Generator`
+- 不传值。等价于Promise(undefined)
+### Generator函数
 - 一个状态机，内部封装了很多种状态。
 - 此函数会返回一个遍历器对象
-
-
 
 ### 利用`runner`函数进行带逻辑的异步请求
 
@@ -218,13 +219,46 @@ runner(function*() {
 })
 ```
 
-### 与`async/await`区别
+> 与`async/await`区别
+> - 写法一样，还不需要`runner`函数
+> - 还可以写成箭头函数。
+### async/await
+``` javascaript
+// 注意区分
+const a = yield 3; // a: undefined
+const b = await 3; // b: 3
+```
 
-- 写法一样，还不需要`runner`函数
-- 还可以写成箭头函数。
+### `Iterator`
+默认的Iterator接口部署在数据结构的Symbol.iterator属性上。换言之，只要一个数据实现了这个属性，他就可以使用for...of进行遍历。此属性值必须为一个**遍历器对象**（含有next方法的对象）。
+``` javascript
+let flag = false
+const obj = {
+  [Symbol.iterator]() {
+    return {
+      next() {
+        if(flag) {
+          return {
+            value: 3,
+            done: true
+          }
+        } else {
+          flag = true
+          return {
+            value: 3,
+            done: false
+          }
+        }
+      }
+    }
+  }
+}
+for (let k of obj) {
+  console.log(k)
+}
+// 3
+```
 
-## `Iterator`
-默认的Iterator接口部署在数据结构的Symbol.iterator属性上。
 
 ## 正则表达式
 正则要么匹配字符，要么匹配位置。
@@ -613,27 +647,3 @@ arr.map((v, i, array) => {
 - 原始值，return 强转 number 后的原始值
 - 非原始值，调用 toString 方法 - 原始值，return 强转 number 后的原始值 - 非原始值，抛出异常`TypeError: Cannot convert object to primitive value`
   > 强转 number 规则，null -> 0，undefined -> NaN，true -> 1，false -> 0，失败 -> NaN
-
-## Promise
-灵活运用转Promise对象的接口Promise.resolve()
-### Promise.resolve()
-处理4种情况参数
-- Promise对象，直接返回。
-- thenable对象，该对象then方法里必须使用resolve或者reject，否则Promise.resolve(thenable对象)一直是pending状态
-``` javascript
-const obj = {
-  then: () => {}
-}
-
-Promise.resolve(obj)
-// 等价于
-new Promise(obj.then)
-```
-- 其他值。
-``` javascript
-const obj = {}
-Promise.resolve(obj)
-// 等价于
-new Promise(resolve => resolve(obj))
-```
-- 不传值。等价于Promise(undefined)
