@@ -1,6 +1,6 @@
 ## 术语缩写
 - `WWW` (Word Wide Web) 万维网
-- `AJAX` (Asynchronous JavaScript and XML)
+- `AJAX` (Asynchronous JavaScript and XML) 异步JavaScript与XML技术
 - `URI` (Uniform Resource Identifier) 统一资源标识符
 - `URL` (Uniform Resource Locator) 统一资源定位符
 - `HTML` (HyperText Markup Language) 超文本标记语言
