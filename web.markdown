@@ -135,3 +135,11 @@ pragma(1.0)，只有一个唯一值no-cache。优先级pragma > cache-control。
 - 在URI输入栏中输入然后回车/通过书签访问。会通过Expires或者Cache-Control判断是否过期，未过期则不发送请求，使用缓存。
 - F5/点击工具栏中的刷新按钮/右键菜单重新加载。始终会发送一个请求，并带上etag或者last-modified的值，以此来决定是否使用缓存。
 - Ctl+F5。彻底拿一份新资源。
+
+## 攻击
+- XSS，动态解析html（从服务端数据或者从url上）造成加载其它不可控的脚本。
+- SQL注入攻击，动态拼接SQL造成调用攻击者设置好的SQL。
+- OS，例如发邮件调用系统级的shell时。
+- HTTP首部注入，例如利用location字段进行注入攻击。
+- CSRF，跨站点请求伪造。
+- DDoS，拒绝服务攻击。
