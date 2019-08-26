@@ -163,6 +163,43 @@ new Promise(resolve => resolve(obj))
 - 一个状态机，内部封装了很多种状态。
 - 此函数会返回一个遍历器对象
 
+可用结构操作符`...`遍历。
+``` javascript
+function* initializer(count, mapFunc = i => i) {
+  for (let i = 0; i < count; i++) {
+    const value = mapFunc(i, count);
+    if (mapFunc.constructor.name === "GeneratorFunction") {
+      yield* value;
+    } else {
+      yield value;
+    }
+  }
+}
+
+// 用于生成52张扑克牌
+const cards = [
+  ...initializer(13, function*(i) {
+    let p = i + 1;
+    if (p === 1) {
+      p = "A";
+    }
+    if (p === 11) {
+      p = "J";
+    }
+    if (p === 12) {
+      p = "Q";
+    }
+    if (p === 13) {
+      p = "K";
+    }
+    yield `♠${p}`;
+    yield `♣️${p}`;
+    yield `♥️${p}`;
+    yield `♦️${p}`;
+  })
+];
+```
+
 ### 利用`runner`函数进行带逻辑的异步请求
 
 ```javascript
