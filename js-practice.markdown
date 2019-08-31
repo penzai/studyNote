@@ -123,3 +123,9 @@ function sendRequest(urls, max, callback) {
 }
 ```
 
+## 优化
+- 缓存。HTTP首部控制，通过cache-control/eTag。
+- 推迟不必要的加载。
+- 避免内存泄漏。
+- 优化递归的算法。
+

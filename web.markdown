@@ -17,6 +17,18 @@
 - `Dos` (Denial of Service) 拒绝服务攻击
 - `CDN` (Content Delivery Network) 内容分发网络
 
+## 容量
+1字节（Byte）= 8比特（bit)
+
+1KB = 1000Byte
+
+1KiB = 1024Byte
+
+## 渲染
+- script会阻塞渲染
+- link在没有script的情况下不会阻塞渲染，有script的情况下会阻塞
+- 两种标签均可设置异步避免阻塞，script使用defer/sync，link使用`media="print"`。
+> async加载后立即执行，没有顺序可言。script按顺序异步加载，所以比async慢。
 ## DOM
 三种节点：
 - document，最外层，html之上，只有一个唯一子元素html

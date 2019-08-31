@@ -1,9 +1,49 @@
+## 变量对象
+跟执行上下文相关的一个隐式对象。包含：
+- 变量声明（VariableDeclaration）
+- 函数声明（FunctionDeclaration）
+- 形参
+### 全局对象
+VO === this === global
+
+在浏览器中，全局对象的window属性指向了全局对象，而不是window就是全局对象，如下:
+``` javascript
+global = {
+  Math: <...>,
+  String: <...>
+  ...
+  ...
+  window: global
+};
+```
+> 在全局上，变量声明与未声明的区别在于，声明的变量不能被delete删除（eval中定义的可以删除），而因为未声明被挂载到global的变量可以删除。
+### 函数上下文中的变量对象
+VO === AO
+
+``` javascript
+AO = {
+  arguments: {
+    callee: 当前函数的引用,
+    length: 实参的个数，
+    properties-indexes：
+  }
+};
+```
+arguments对象的properties-indexes的值与当前（实际传递的）形参是共享的，修改一个，另一个跟着变，但是未传入的参数不共享。例如函数形参3个，实参2个，那么arguments[2]与z各是个的值，而arguments[0]与x则共享。
+### 处理上下文代码的2个阶段
+1. 进入执行上下文。依代码顺序在变量对象上填充属性，对于函数声明，直接增加key赋值value，并且重名替换。对于形参与变量声明，增加key赋值undefined，但是重名忽略。
+2. 执行代码
+
 ## 类型判断
 - typeof操作符： 简单判断类型，无法区分例如数组与对象、null与对象。
 - instanceof操作符/isPrototypeOf()： 测试实例与原型链中**出现过**的构造函数。
 > 当构造函数返回的是引用类型时，无法判断。
 - Object.prototype.toString.call(obj)
 - obj.hasOwnProperty(key) 判断obj实例有没有key属性
+
+## switch
+- 用全等比对switch传入的表达式值与case后面的表达式值，true就执行case下面的代码，false则找寻default代码。
+- 一旦代码开始执行（包括case的代码或者default的代码），如果没有碰到break，不管后面的case条件，一律直接执行。
 
 ## `bind`方法
 
@@ -684,3 +724,102 @@ arr.map((v, i, array) => {
 - 原始值，return 强转 number 后的原始值
 - 非原始值，调用 toString 方法 - 原始值，return 强转 number 后的原始值 - 非原始值，抛出异常`TypeError: Cannot convert object to primitive value`
   > 强转 number 规则，null -> 0，undefined -> NaN，true -> 1，false -> 0，失败 -> NaN
+
+## 递归
+纯粹的函数式编程语言没有循环操作命令，所有的循环都用递归实现。
+
+递归就是函数自己调用自己。
+### 尾调用
+函数最后一步调用一个函数，只调用函数，不做其它运算。
+### 尾递归
+函数最后一步调用自身。
+
+例如：一个阶乘函数，n够大时发生栈溢出。
+``` javascript
+function factorial(n) {
+  if (n === 1) return 1;
+  return n * factorial(n - 1);
+}
+```
+改写成尾递归，由于每次执行完后不需要保持当前作用域的变量，所以可销毁，永远只有一层（V8引擎未实现）。
+``` javascript
+function factorial(n, total) {
+  if (n === 1) return total;
+  return factorial(n - 1, n * total);
+}
+```
+对于不支持自动优化的，改写为迭代模式。
+``` javascript
+const factorial = v => {
+  let initialValue = v
+  let result = 1
+  while(initialValue > 0) {
+    result = initialValue * result
+    initialValue--
+  }
+  return result
+}
+```
+
+## 内存管理
+### GC（Garbage Collection）
+- 引用计数（reference counting）。缺点：无法解决循环引用。
+- 标记清除（mark and sweep algorithm）
+### 常见内存泄漏
+- 全局变量。不声明变量或者全局作用域函数中调用this，不小心把变量挂载到全局对象上，此变量一直被全局对象引用，只有关闭窗口或者重新刷新页面才被释放。
+- console.log。传入的对象会被一直引用，不会被GC回收。
+- 闭包。首先闭包本身带作用域，所以占用内存会比一般的多。然后在使用时，很多不明显的变量会被缓存，例如:
+``` javascript
+function f() {
+  var str = Array(10000).join('#');
+  var foo = {
+    name: 'foo'
+  }
+  const unused = () => {
+    var message = 'it is only a test message';
+    str = 'unused: ' + str;
+  }
+  function getData() {
+    return 'data'
+  }
+  return getData
+}
+var list = [];
+document.querySelector('#btn').addEventListener('click', function () {
+  list.push(f());
+}, false);
+// str变量虽然没使用，但一直被缓存。
+```
+解释如下：在相同作用域内创建的多个内部函数对象是共享同一个变量对象AO。如果创建的内部函数没有被其他对象引用，不管内部函数是否引用外部函数的变量和函数，在外部函数执行完，对应变量对象便会被销毁。反之，如果内部函数中存在有对外部函数变量或函数的访问（可以不是被引用的内部函数），并且存在某个或多个内部函数被其他对象引用，那么就会形成闭包，外部函数的变量对象就会存在于闭包函数的作用域链中。这样确保了闭包函数有权访问外部函数的所有变量和函数。
+
+个人理解：内部函数没有被引用，那么所有变量执行完后就销毁。如果有一个内部函数被其他地方引用，那么大家（所有内部函数）引用的东西都得存在闭包里面，就算你没有被其他地方引用也得存下来。
+
+另一个闭包泄露例子：
+``` javascript
+var theThing = null;
+var replaceThing = function () {
+  var originalThing = theThing;
+  var unused = function () {
+    if (originalThing)
+      console.log("hi");
+  };
+  theThing = {
+    longStr: new Array(1000000).join('*'),
+    someMethod: function () {
+      console.log(someMessage);
+    }
+  };
+};
+setInterval(replaceThing, 1000);
+```
+- DOM。dom赋值给变量，dom销毁后，变量依然保持引用，造成dom没有被真正销毁。
+- timers。一般是setInterval用完没有被及时clear以及setTimeout嵌套没有被正确终止。
+- EventListener。一般是某个重复事件中绑定其他dom事件，当事件重复执行时，造成了重复绑定，导致异常。
+> dom.addEventListener('click', fn, false)这种方式多次执行绑定不会增加新事件。
+
+## 严格模式
+包括但不限于以下特点：
+- 全局对象为undefined。这样就不会因为未声明变量而挂载到全局对象上，从而造成内存泄漏，因为一旦挂载了，那么只有刷新页面或者关闭tab才会被释放。
+- arguments不可用。据阮一峰文章解释，这样就可以优化尾递归，因为非严格模式拥有arguments.callee，需指向本身，造成了作用域栈不能被优化。（测试未通过）
+
+
