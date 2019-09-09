@@ -41,8 +41,11 @@ git config --global user.email '修改后邮箱'
 git clone 地址 -b 分支名字
 
 
-# 修改最后一次提交记录
+# 修改最后一次提交记录，--no-edit表示不修改提交备注
 git commit --amend
+
+# 让工作控件回到某个commit，--hard表示强制，并且会清空所有改动！！！未受版本控制的文件除外。
+git reset hash值
 ```
 
 ### branch
