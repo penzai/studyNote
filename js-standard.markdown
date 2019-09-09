@@ -177,9 +177,11 @@ var _new = function() {
 ```
 ## 异步编程
 ### Promise
-灵活运用转Promise对象的接口Promise.resolve()
+
 #### Promise.resolve()
-处理4种情况参数
+灵活运用转Promise对象的接口Promise.resolve()。
+
+参数处理情况如下：
 - Promise对象，直接返回。
 - thenable对象，该对象then方法里必须使用resolve或者reject，否则Promise.resolve(thenable对象)一直是pending状态
 ``` javascript
@@ -199,48 +201,8 @@ Promise.resolve(obj)
 new Promise(resolve => resolve(obj))
 ```
 - 不传值。等价于Promise(undefined)
-### Generator函数
-- 一个状态机，内部封装了很多种状态。
-- 此函数会返回一个遍历器对象
 
-可用结构操作符`...`遍历。
-``` javascript
-function* initializer(count, mapFunc = i => i) {
-  for (let i = 0; i < count; i++) {
-    const value = mapFunc(i, count);
-    if (mapFunc.constructor.name === "GeneratorFunction") {
-      yield* value;
-    } else {
-      yield value;
-    }
-  }
-}
-
-// 用于生成52张扑克牌
-const cards = [
-  ...initializer(13, function*(i) {
-    let p = i + 1;
-    if (p === 1) {
-      p = "A";
-    }
-    if (p === 11) {
-      p = "J";
-    }
-    if (p === 12) {
-      p = "Q";
-    }
-    if (p === 13) {
-      p = "K";
-    }
-    yield `♠${p}`;
-    yield `♣️${p}`;
-    yield `♥️${p}`;
-    yield `♦️${p}`;
-  })
-];
-```
-
-### 利用`runner`函数进行带逻辑的异步请求
+#### 利用`runner`函数进行带逻辑的异步请求
 
 ```javascript
 function runner(_gen) {
@@ -299,6 +261,47 @@ runner(function*() {
 > 与`async/await`区别
 > - 写法一样，还不需要`runner`函数
 > - 还可以写成箭头函数。
+
+### Generator函数
+- 一个状态机，内部封装了很多种状态。
+- 此函数会返回一个遍历器对象
+
+可用结构操作符`...`遍历。
+``` javascript
+function* initializer(count, mapFunc = i => i) {
+  for (let i = 0; i < count; i++) {
+    const value = mapFunc(i, count);
+    if (mapFunc.constructor.name === "GeneratorFunction") {
+      yield* value;
+    } else {
+      yield value;
+    }
+  }
+}
+
+// 用于生成52张扑克牌
+const cards = [
+  ...initializer(13, function*(i) {
+    let p = i + 1;
+    if (p === 1) {
+      p = "A";
+    }
+    if (p === 11) {
+      p = "J";
+    }
+    if (p === 12) {
+      p = "Q";
+    }
+    if (p === 13) {
+      p = "K";
+    }
+    yield `♠${p}`;
+    yield `♣️${p}`;
+    yield `♥️${p}`;
+    yield `♦️${p}`;
+  })
+];
+```
 ### async/await
 ``` javascaript
 // 注意区分
@@ -306,7 +309,7 @@ const a = yield 3; // a: undefined
 const b = await 3; // b: 3
 ```
 
-### `Iterator`
+## `Iterator`
 默认的Iterator接口部署在数据结构的Symbol.iterator属性上。换言之，只要一个数据实现了这个属性，他就可以使用for...of进行遍历。此属性值必须为一个**遍历器对象**（含有next方法的对象）。
 ``` javascript
 let flag = false
