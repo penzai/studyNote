@@ -46,10 +46,13 @@ arguments对象的properties-indexes的值与当前（实际传递的）形参�
 - 一旦代码开始执行（包括case的代码或者default的代码），如果没有碰到break，不管后面的case条件，一律直接执行。
 
 ## `bind`方法
-
-- 语法`fun.bind(thisArg[, arg1[, arg2[, ...]]])`
-- 此方法会产生一个**新方法**，所以原方法改变了,它依然存在
+- bind会产生一个**新方法**，方法名为`bound 原函数名`
 - `bind`传递的参数优先级比原函数高，且后来的参数是紧跟着`bind`参数的后面，而不是对位取代
+- bind返回的函数可以通过new调用，这时提供的this的参数被忽略，指向了new生成的全新对象。内部模拟实现了new操作符
+### 手写bind
+1. 返回`bound`方法
+2. 通过`this instanceof bound`来决定是否模拟new操作符
+3. 调整返回方法的`name`与参数的`length`
 
 ## Object
 
@@ -627,6 +630,9 @@ console.log(a.x) // ???
   - 元素不为 empty，获取此刻原数组的元素值，执行方法调用
 
 > 使用 map 方法处理数组时，数组元素的范围是在 callback 方法第一次调用之前就已经确定了。在 map 方法执行的过程中：原数组中新增加的元素将不会被 callback 访问到；若已经存在的元素被改变或删除了，则它们的传递到 callback 的值是 map 方法遍历到它们的那一时刻的值；而被删除的元素将不会被访问到。 —— MDN https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/map
+
+> 边循环边更改原数组时，有两个特点。一是循环长度只减不增，二是循环值为更改后原数组按index取值。
+
 
 ### Array.prototype.reduce
 
