@@ -180,7 +180,7 @@ var _new = function() {
 ```
 ## 异步编程
 ### Promise
-
+promise的then，如果在执行promise后，该promise为resolved状态，那么then会被马上进入微任务队列。
 #### Promise.resolve()
 灵活运用转Promise对象的接口Promise.resolve()。
 
@@ -831,4 +831,17 @@ setInterval(replaceThing, 1000);
 - 全局对象为undefined。这样就不会因为未声明变量而挂载到全局对象上，从而造成内存泄漏，因为一旦挂载了，那么只有刷新页面或者关闭tab才会被释放。
 - arguments不可用。据阮一峰文章解释，这样就可以优化尾递归，因为非严格模式拥有arguments.callee，需指向本身，造成了作用域栈不能被优化。（测试未通过）
 
+## JSON.stringify
+### 第2个参数
+只针对对象有作用
+#### 数组
+只转换数组内的key值，无则转换为`{}`。
+#### 函数
+针对每一次的返回进行处理。比如可以转换`{ a: new Set([1]) }`
 
+### 第3个参数
+只针对对象有作用，用于美化对象的输出。
+#### 数字
+0就是默认，比0小无效。每一行前面加相应数目的空格。
+#### 字符串
+每一行前面加相应的字符。

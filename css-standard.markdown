@@ -256,3 +256,5 @@ float、clear、vertical-align不能影响item
 - flexible images，设置max-width: 100%
 - media queries
 - mobile first
+
+## 动画

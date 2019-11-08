@@ -129,3 +129,12 @@ function sendRequest(urls, max, callback) {
 - 避免内存泄漏。
 - 优化递归的算法。
 
+## 深拷贝
+### JSON.stringify()
+优点：简单。
+
+缺点：不能拷贝函数，不能拷贝其它引用类型，不能解决循环引用。
+
+## 判断是否是正整数
+推荐Number.isInteger()和Math.floor/ceil/round。其它方法或多或少的有明显的缺陷。
+
