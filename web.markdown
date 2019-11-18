@@ -155,3 +155,18 @@ pragma(1.0)，只有一个唯一值no-cache。优先级pragma > cache-control。
 - HTTP首部注入，例如利用location字段进行注入攻击。
 - CSRF，跨站点请求伪造。
 - DDoS，拒绝服务攻击。
+
+## 常见项目优化
+- 常用第三方库用cdn引入（公司专用最好），使用webpack的externals动态引入。
+- gzip压缩。打包时生成.gz文件，方便nginx服务器直接返回文件，无需利用cpu计算。
+- preload预加载首屏需要图片
+- dns-prefetch预解析需要跨域的dns
+- 首屏使用动画，提前渲染，减少用户的焦虑感
+- moment.js改为使用day.js
+- 图片懒加载。
+ 1. 在scroll事件里处理（根据getBoundingClientRect接口获取top与scrollTop比对），需要注意几点（事件函数节流，首次先运行一次，滚动完毕移除事件）
+ 2. 或者使用IntersectionObserver构造函数管擦判断是否加载图片
+ 3. 使用vue-lazyload插件
+- 图片使用.webp格式，为了兼容不使用的环境，使用picture标签来设定一层层的兼容
+- 减少DOM操作。避免获取视图信息（getBoundingClientRect,clientWidth,offsetWidth）,因为它会立即更新浏览器重排/重绘维护的队列。高频事件防抖节流。
+- 打包优化，使用DllPlugin分离第三方类库，使用add-asset-html-webpack-plugin来注入到index.html中

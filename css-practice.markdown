@@ -326,19 +326,6 @@ body {
 }
 ```
 
-### 多行显示
-```
-line-camp( @clamp:2 ) {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: @clamp;
-  /*! autoprefixer: off */
-  -webkit-box-orient: vertical;
-  /* autoprefixer: on */
-}
-```
-
 ### 移动端1px
 简单版
 ``` css
@@ -410,3 +397,70 @@ line-camp( @clamp:2 ) {
   }
 }
 ```
+
+## 截断文本
+### 单行
+``` css
+.class {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+```
+### 多行
+#### css实现
+存在IE兼容性问题
+``` css
+.class {
+  -webkit-line-clamp: 2;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+```
+#### 使用js计算
+对英文操作不便利
+``` js
+clampWord(el, maxLineNum) {
+  const elWidth = +getComputedStyle(el).width.slice(0, -2); // 最大宽度
+  const fontWidth = +getComputedStyle(el).fontSize.slice(0, -2); // 单字宽度
+  const maxLineFontNum = Math.floor(elWidth / fontWidth); // 一行能容纳的字数
+  const maxFontNum = maxLineNum * maxLineFontNum; // 要显示的字的总数
+  el.innerHTML = el.innerHTML.slice(0, maxFontNum).concat("...");
+}
+```
+#### float效果
+``` css
+.word {
+  width: 288px;
+  border: 1px solid red;
+  line-height: 23px;
+  max-height: 46px;
+  overflow: hidden;
+  position: relative;
+}
+.word::before {
+  float: left;
+  content: "";
+  width: 20px;
+  height: 46px;
+}
+.word .text {
+  float: right;
+  width: 100%;
+  margin-left: -20px;
+  word-break: break-all;
+}
+.word::after {
+  content: "...";
+  float: right;
+  width: 20px;
+  height: 20px;
+  position: relative;
+  left: 100%;
+  transform: translate(-100%, -100%);
+  background: #fff;
+}
+```
+> float的摆放次序，例如right摆放次序，按书写顺序摆放，如果前方遇见障碍，那么在最低的障碍（可能是前方的障碍物，也可能是后方的，视高度而定）最下方开始排列。
