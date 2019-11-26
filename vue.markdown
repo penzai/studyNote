@@ -25,6 +25,7 @@
 - `destroyed`
 
 ## 插槽
+
 - slot 合并
 - v-slot 替换
 - slot + slot-scope 替换
@@ -43,7 +44,7 @@ export default {
       render: (h, ctx) => ctx.props.vnodes
     }
   }
-}
+};
 ```
 
 ## 组件通信方式
@@ -82,14 +83,16 @@ modules: {
   > 先匹配后计算
 
 ## echarts
-1. 使用this.$refs.xxx获取dom，而不使用document.getElementById('xxx)
 
-2. 图表的chart.resize()功能提取为单独函数，使用resize-detector库的addListener进行绑定和removeListener取消绑绑定，且使用debounce进行防抖处理(可在created生命周期里对vue组件的methods中的方法进行改造)
+1. 使用 this.\$refs.xxx 获取 dom，而不使用 document.getElementById('xxx)
 
-3. 不要忘记在beforeDestroy生命周期里解绑事件，以及使用chart.dispose()图表
+2. 图表的 chart.resize()功能提取为单独函数，使用 resize-detector 库的 addListener 进行绑定和 removeListener 取消绑绑定，且使用 debounce 进行防抖处理(可在 created 生命周期里对 vue 组件的 methods 中的方法进行改造)
+
+3. 不要忘记在 beforeDestroy 生命周期里解绑事件，以及使用 chart.dispose()图表
 
 ## mock
-``` javascript
+
+```javascript
  proxy: {
     "/api": {
       target: "http://localhost:3000"
@@ -115,8 +118,39 @@ modules: {
 }
 ```
 
+## vue-cli 脚手架使用注意
+
+### 自动格式化
+
+默认的错误警告提示只在命令行显示，且格式化需要手动运行`yarn lint`。
+
+自动操作如下：
+
+- 安装 eslint 插件
+- 配置
+
+```json
+{
+  // 打开保存时自动格式化，在vue文件中与autoFix属性缺一不可
+  "eslint.autoFixOnSave": true,
+  // 需要调用eslint的文件类型
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    {
+      "language": "vue",
+      "autoFix": true
+    }
+  ]
+}
+```
+
+建议规则配置操作，修改`.eslintrc.js`：
+
+- extends 字段中的`"plugin:vue/essential"` 改为`"plugin:vue/recommended"`
+- rules 字段中添加如下忽略规则：
+  - "vue/require-default-prop": "off"
 
 ## 踩坑
-- props传递的数据，如果不是在原对象上面修改，那么直接紧接着使用`this.$refs.xxx.xxx()`方法里面访问到的还是旧值。需要使用`this.$nextTick()`;
 
-
+- props 传递的数据，如果不是在原对象上面修改，那么直接紧接着使用`this.$refs.xxx.xxx()`方法里面访问到的还是旧值。需要使用`this.$nextTick()`;
