@@ -82,29 +82,66 @@ arguments 对象的 properties-indexes 的值与当前（实际传递的）形�
 
 ## Object
 
+### 属性种类
+
+- accessor properties 访问器属性，get/set 方法
+- data properties 数据属性
+- internal properties 内部属性，不可见且无名，例如：[[Prototype]]、[[Extensible]]、[[DefineOwnProperty]]、[[Put]]（赋值运算符=所调用的方法）
+
+### `Object.defineProperty`
+
+定义对象 o 的属性 p，并返回对象 o。
+
+#### 内容
+
+其中 descriptor 分为如下：
+
+- 公共描述符
+  - `configurable`(false)能否配置以及被删除（具体影响见下文）
+  - `enumerable`(false) 能否枚举
+- 择其一
+  - data scriptors
+    - `value`(undefined)
+    - `writable`(false) 该值是否能够被更改（只设置此值只能限制赋值运算符更改，想完全限制需要结合 configurable 属性）
+  - accessor descriptors
+    - `get`(undefined)
+    - `set`(undefined)
+
+#### `configurable`详解
+
+配置为 false 时，即：
+
+1. 不能删除属性 p
+2. 不能重新配置属性 p，但有例外：
+   1. writable 为 true 时，配置 value
+   2. writable 为 true 时，配置 writable
+3. 不能数据描述符与访问器描述符之间互转
+
+> 所谓不能重新配置，并不是不能再次调用，只要这次调用的参数值与 configurable 为 false 时设置的一样，依然可以调用。实际上就是一个徒劳的举动。
+
+2.2 的来历：
+
+> There is one exception to this rule—JavaScript allows you to change an unconfigurable property from writable to read-only, for historic reasons; the property length of arrays has always been writable and unconfigurable. Without this exception, you wouldn’t be able to freeze (see Freezing) arrays.
+
+#### 与赋值运算符=的区别
+
+区别：
+
+1. 原对象 o 有属性 p。赋值运算符会被访问器属性中的 setter 和数据属性中的 writable:false 控制，就此结束。而定义是根据一定的规则重新配置原属性。
+2. 原对象 o 的原型有属性 p。如果将要操作的属性 p 是来自于原型，那么赋值会被 setter 和 writable 影响，而定义不会（就算原型的 p 属性被设置为 configurable:false, writable:false 也不会）。
+3. 原对象 o 无属性 p。执行新增操作，赋值运算符虽然是调用[[Put]]进行操作，但是最后两者都会殊途同归调用[[DefineOwnProperty]]，区别在于默认值的设置。前者全为 true，后者全为 false。
+
+共同：
+
+1. 创建新的值时都会检测对象 o 是否是非扩展对象。
+   > 扩展对象，检查用 Object.isExtensible()，设置用 Object.preventExtensions()，注意与冻结的区别。
+
 ### `Object.is`
 
 与`===`区别：
 
 - `+0` 与 `-0`，`===`返回 true，Object.is 返回 false
 - `NaN`与`NaN`，`===`返回 false，Object.is 返回 true
-
-### `Object.defineProperty`
-
-新增或者修改一个对象的一个属性，并返回这个对象。语法为`Object.defineProperty(obj, prop, descriptor)`。
-
-其中 descriptor 分为如下：
-
-- 公共描述符
-  - `configurable`(false)能否配置以及删除
-  - `enumerable`(false) 能否枚举
-- 择其一
-  - data scriptors
-    - `value`(undefined)
-    - `writable`(false) 能否被赋值运算符改变
-  - accessor descriptors
-    - `get`(undefined)
-    - `set`(undefined)
 
 ### 对象循环
 
@@ -129,6 +166,80 @@ arguments 对象的 properties-indexes 的值与当前（实际传递的）形�
 - 首先遍历所有数值键，按照数值升序排列。
 - 其次遍历所有字符串键，按照加入时间升序排列。
 - 最后遍历所有 Symbol 键，按照加入时间升序排列。
+
+## Class
+
+### 定义
+
+es6 的 class 关键词与 es5 构造函数的定义区别，注意次序
+
+- 实例属性
+  - 1. 使用=的属性和属性方法，在构造函数中生成，this 永久指向实例
+  - 2. 不使用=的属性，在构造函数中生成
+  - 3. 不使用=的属性方法，在类生成中生成，加入到类的原型上（多实例公用），this 指向随动
+- 类属性
+  - 4. 不使用等于=，在类生成中生成，this 指向随动
+  - 5. 使用=的属性和属性方法，在类生成后才加上去，且 this 永久指向类本身
+
+```javascript
+class Cat {
+  constructor(name) {
+    this.name = name;
+  }
+
+  fn = () => {
+    console.log(this);
+  };
+  name = 3;
+
+  fn() {
+    console.log(this);
+  }
+
+  static s = 1;
+  static sfn() {}
+  static sfn = () => {
+    console.log(this);
+  };
+}
+```
+
+转化后
+
+```javascript
+var Cat = (function() {
+  function Cat(name) {
+    var _this = this;
+
+    this.fn = function() {
+      console.log(_this);
+    };
+
+    this.name = 3;
+    this.name = name;
+  }
+
+  Object.defineProperties(Cat.prototype, {
+    fn: function() {
+      console.log(this);
+    }
+  });
+
+  Object.defineProperties(Cat, {
+    sfn: function() {
+      console.log(this);
+    }
+  });
+
+  return Cat;
+})();
+
+Cat.s = 1;
+
+Cat.sfn = function() {
+  console.log(Cat);
+};
+```
 
 ### 继承
 
@@ -191,6 +302,8 @@ function createAnother(original) {
 SubType.prototype = object(SuperType.prototype);
 SubType.prototype.constructor = SubType;
 ```
+
+> 类的静态属性继承：`Object.setPrototypeOf(SubType, SuperType)`
 
 ### 原型链关系表
 
