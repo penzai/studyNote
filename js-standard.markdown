@@ -305,15 +305,50 @@ SubType.prototype.constructor = SubType;
 
 > 类的静态属性继承：`Object.setPrototypeOf(SubType, SuperType)`
 
-### 原型链关系表
+### 原型
+要产生一个变量v，需要：
+1. 能设置v的自有属性（要是能按一定逻辑设置就更好了）
+2. 能设置v的公有属性
 
-- 函数拥有`prototype`属性，而任意对象拥有原型`__proto__`。
-- 所谓的原型链其实是指`__proto__`与`prototype`的从属关系
-  - `对象实例.__proto__ === 构造函数.prototype`
-  - `构造函数.prototype.__proto__ === 父构造函数.prototype`（如果父构造函数又继承  于其他函数，则关系类似，一直直到顶层构造函数）
-  - `顶层构造函数.prototype.__proto__ === Object.prototype`
-  - `Object.prototype.__proto__ === null`
-  - 一层特殊的关系：`Object.__proto__ === Function.prototype`
+js用了以下东西来操作：
+1. 用一个函数f来设置自有属性，函数拥有逻辑，更贴切
+2. 一个对象p，包含所有类v变量的公有属性
+
+为了更加紧密、规范：
+1. 函数采用大写命名F，别名构造函数
+2. 函数天生拥有一个属性`prototype`，来存储对象p
+
+所以任何一个变量v就可以由一个构造函数F生成。
+
+生成后的v怎么与构造函数关联呢。
+
+想当然的是v的一个属性指向构造函数F，问题有两：
+- 该关联属性应该有所隐藏，不能算作v表现的东西
+- 找寻公有属性，需要多取一次值，需要F.prototype，一次到没什么，当层级多了以后，这是一种不必要的浪费
+
+js采用了以下设置：
+1. 变量v拥有一个隐式原型`__proto__`
+2. `__proto__`直接指向公有属性p，而不是构造函数F，而出于又要能与构造函数F关联，所以把F存在了公有属性p的属性`constructor`中
+
+至此，一切关联都理所当然。
+
+#### 解决Function
+构造函数F又是谁生成的呢？按照推论到底，是Function函数，那么Function函数又是由哪个构造函数生成的呢。
+
+函数Function自己创造了自己，这条规则却不适用于Object.prototype
+
+- ✅`Function.__proto__.constructor === Function`
+- ✅`Function.__proto__ === Function.prototype`
+- ❌`Object.prototype.__proto__ === Object.prototype`
+
+#### 解决Object.prorotype
+公有属性p，也就是原型prototype推论到底，是由Object构造函数生成的，Object在上述第一个问题中产生，可是Object.prototype又是怎么产生的。
+
+null不借构造函数就创造了Object.prototype，即：
+
+- ✅`Object.prototype.__proto__ === null`
+
+那么自然Object.prototype的构造函数也没有。
 
 ![http://www.mollypages.org/tutorials/js.mp](img/js-standard/jsobj_full.jpg)
 
