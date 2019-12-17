@@ -24,6 +24,10 @@
 - `beforeDestroy`
 - `destroyed`
 
+### 父子组件的生命周期
+- 父组件会等待子组件挂载
+- 当子组件完成挂载后，父组件会主动执行一次beforeUpdate/updated钩子函数
+
 ## 插槽
 
 - slot 合并
