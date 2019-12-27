@@ -19,12 +19,6 @@ justify值只影响文字。
 #### text-bottom
 英文字母四条基线的第**四**条基线
 
-
-
-## white-space空格处理
-
-- nowrap强制同行显示
-
 ## 拖动
 
 - 设置属性darggable为true来开启拖动功能
@@ -257,4 +251,21 @@ float、clear、vertical-align不能影响item
 - media queries
 - mobile first
 
-## 动画
+## 文本
+### white-space
+决定html中空格的处理方式。
+- normal，CJK和Non-CJK单词之间自动换行，空格合并为1个，换行符会被当作空白符来处理
+- nowrap，不换行
+- pre，保留所有特征
+- pre-wrap，保留所有特征，但是会自动换行
+- pre-line，在默认的基础上增加换行符生效特征
+
+### word-break
+决定单词**内部**断行方式。
+- normal，默认，CJK自动换行，Non-CJK单词内部不断行（但是单词之间会换行）。
+
+由上可知，两类字符的断行方式默认不一样，那么下面两种就是为了设置成统一的。
+- break-all，都断行
+- keep-all，都不断行（标点符号处，依然会进行断行）
+
+> 细想上面的属性，其实处理都不太好，假如我们只想让比宽度还宽的那个单词换行，我们可以使用break-word属性，但是兼容性不太好。不过可以通过设置`word-wrap: break-word;`来实现，css3里提议为overflow-wrap名称。

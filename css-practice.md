@@ -464,3 +464,9 @@ clampWord(el, maxLineNum) {
 }
 ```
 > float的摆放次序，例如right摆放次序，按书写顺序摆放，如果前方遇见障碍，那么在最低的障碍（可能是前方的障碍物，也可能是后方的，视高度而定）最下方开始排列。
+
+## 垂直居中
+- flex布局
+- top50%结合translateX/Y
+- 绝对定位通过top50%与margin调整具体长度数值
+- 绝对定位通过设置top/left/right/bottom为0加上margin为auto

@@ -45,22 +45,30 @@ O(n^2)
 
 ### 选择排序（selection sort）
 
-O(n^2)
+O(n^2)/Θ(n^2)，雷打不动n^2。
 
 ### 插入排序 (insertion sort)
 
-O(n^2)
+O(n^2)/Ω(n)/Θ(n^2)，原始序列越有序，时间复杂度越低。
+``` javascript
+const insertionSort = arr => {
+  for (let i = 1; i < arr.length; i++) {
+    const temp = arr[i];
+    let j = i;
+    while (j > 0 && temp < arr[j - 1]) {
+      arr[j] = arr[j - 1];
+      j--;
+    }
+    arr[j] = temp;
+  }
+};
+```
 
 ### 快速排序 (quick sort)
 
-分治策略（重点在分），不稳定，就地
+O(n^2)/Θ(nlogn)，分治策略（重点在分），不稳定，就地
 
-平均性能：O(nlogn)
-
-空间复杂度：O(1)
-
-时间复杂度：O(nlogn) ~ O(n^2)
-
+方案一：两个指针向中间靠，通过空闲元素来进行交换，最后把轴点交换到中间
 ```javascript
 const quickSort = (arr, lo, hi) => {
   if (hi - lo < 1) return; //循环终止条件
@@ -69,9 +77,6 @@ const quickSort = (arr, lo, hi) => {
   quickSort(arr, mi + 1, hi);
 };
 ```
-
-方案一：两个指针向中间靠，通过空闲元素来进行交换，最后把轴点交换到中间
-
 ```javascript
 const partition = (arr, lo, hi) => {
   const pivot = arr[lo];
