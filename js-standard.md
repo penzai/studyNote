@@ -638,18 +638,6 @@ match、exec、test 方法
 - `Object.observe`
 - `MutationObserver`
 
-### `new`执行了什么
-
-创建一个新对象 foo；
-
-并将它的**proto**指向其构造函数的 prototype，foo.**proto** = Foo.prototype;
-
-动态将 this 指向新对象，Foo.apply(foo，arguments);
-
-执行函数体中的代码；
-
-放回新对象 foo;
-
 ### `ajax`
 
 #### 原生写法
