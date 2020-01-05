@@ -35,6 +35,14 @@
 - 元素节点
 - 文本节点
 
+## 事件模型
+### DOM事件模型
+xxx.onclick，发生在冒泡阶段
+### DOM 2级模型
+- 捕获，目标，冒泡三个阶段
+- e.currentTarget指向注册事件的监DOM对象，e.target指向事件发生的DOM对象
+- this指向指向注册事件的监听DOM对象
+
 ## 尺寸
 - `clientWidth/clientHeight`：`padding` + `content`
 - `clientTop/clientLeft`：`border`
