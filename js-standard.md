@@ -599,21 +599,7 @@ p 本身并不是匹配结果，它只是匹配的条件。例如你要匹配的
 
 match、exec、test 方法
 
-## 浏览器进程
-
-浏览器内核，一个 tab 页，代表一个进程，它又拥有多个线程
-
-- GUI 渲染线程
-- js 引擎线程
-- 事件触发线程（ok 后放入 js 引擎的执行队列）
-- 定时触发线程（ok 后通知事件触发线程）
-- 异步 HTTP 请求线程（ok 后通知事件触发线程）
-
-### 事件流
-
-捕获 -> 本体 -> 冒泡，其中`dom.onclick = function () {}`为冒泡阶段，`addEventListener`根据 useCapture 参数来定（默认 false，即冒泡阶段），但是本体不区分捕获或者冒泡，按照事件定义顺序执行。
-
-### 事件循环 event loop
+## 事件循环 event loop
 
 - 主进程（即整体代码）属于`macrotasks`（`tasks`）。待执行完毕才会去寻找`microtask` (主动使用`.click()`触发事件，不属于异步！此时并没结束主进程，所以如果有事件冒泡，这时会先冒完，而且此时`MutationObserver`处于`pending`状态，无法多次实现)
 - `js`通过事件循环（`event loop`）机制来定期访问异步任务队列

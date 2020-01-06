@@ -93,21 +93,7 @@ decodeURI('http://www.baidu.com/My%20First')
 decodeURIComponent('http%3A%2F%2Fwww.baidu.com%2FMy%20First')
 ```
 
-## TCP🤝
-- 在http/1.0中，不支持持久连接，所有连接串行。
-- 在http/1.1中，支持持久连接，但一个TCP连接一个时刻只能处理一个http请求，不过多个http请求可以复用这次连接。
-- 在http/2.0中，一个TCP就可以同时处理多个http请求，名为Multiplexing。
-- 不同浏览器对TCP连接的数量限制不一样，chrome/6,safari/6,firefox/32。
 
-### 建立，三次🤝
-- C --(SYN数据包)--> S
-- C <--(SYN/ACK数据包)-- S
-- C --(ACK数据包)--> S
-### 断开，四次🤝
-- C <--(FIN)-- S
-- C --(ACK)--> S
-- C --(FIN)--> S
-- C <--(ACK)-- S
 
 
 ## 跨域
@@ -126,7 +112,7 @@ decodeURIComponent('http%3A%2F%2Fwww.baidu.com%2FMy%20First')
 - nginx反向代理
 
 ## 从URL输入开始
-### dns解析
+### 1. dns解析
 通过域名找寻ip地址
 #### 顺序
 1. 浏览器缓存
@@ -148,26 +134,66 @@ decodeURIComponent('http%3A%2F%2Fwww.baidu.com%2FMy%20First')
 - HTTPDNS，使用HTTP协议替代UDP协议，绕过LocalDNS，可以有效防止域名劫持
 - DNS负载均衡（根据权重轮询返回不同的服务器地址）
 
-## 疑问
-- PUT DELETE方法为什么不常用，不带验证机制什么意思？
-- CDN具体是怎么应用的
-
-## 缓存
-### 强缓存
+### 2. 查询缓存决定是否发送HTTP请求
+#### 强缓存
 服务端通过cache-control(1.1)(max-age=毫秒)和expires(1.0)(Date类型值)设置，命中则不发起请求，直接调用磁盘缓存。优先级cache-control > expires。
 
-### 协商缓存
+#### 协商缓存
 服务端通过last-modified/if-modified-since(Date类型值)组合或者etag/if-none-match(资源码)组合来判断，前者是服务端设置，后者是客户端请求携带。优先级ETag > Last-Modified。
 
-### 其他缓存
+#### 其他缓存
 pragma(1.0)，只有一个唯一值no-cache。优先级pragma > cache-control。
 
-### 用户行为
+#### 用户行为
 我们可以把刷新/访问界面的手段分成三类：
 
 - 在URI输入栏中输入然后回车/通过书签访问/location.href。会通过Expires或者Cache-Control判断是否过期，未过期则不发送请求，使用缓存，返回200
 - F5/点击工具栏中的刷新按钮/右键菜单重新加载。始终会发送一个请求，并带上etag或者last-modified的值，以此来决定是否使用缓存（命中就返回304）。
 - Ctl+F5。彻底拿一份新资源。
+
+### 3. TCP连接
+- 在http/1.0中，不支持持久连接，所有连接串行。
+- 在http/1.1中，支持持久连接，但一个TCP连接一个时刻只能处理一个http请求，不过多个http请求可以复用这次连接。
+- 在http/2.0中，一个TCP就可以同时处理多个http请求，名为Multiplexing。
+- 不同浏览器对TCP连接的数量限制不一样，chrome/6,safari/6,firefox/32。
+
+#### 建立，三次🤝
+握手结束后再开始发送信息！
+- C --(SYN数据包)--> S
+- C <--(SYN/ACK数据包)-- S
+- C --(ACK数据包)--> S
+
+
+### 4. 渲染
+浏览器内核，一个 tab 页，代表一个进程，它又拥有多个线程
+
+- GUI 渲染线程
+- js 引擎线程
+- 事件触发线程（ok 后放入 js 引擎的执行队列）
+- 定时触发线程（ok 后通知事件触发线程）
+- 异步 HTTP 请求线程（ok 后通知事件触发线程）
+
+渲染过程：
+- DOM树
+- CSS规则树
+- 合并生成render树，此树跟DOM树并不是一一对应，比如head节点和display:none的节点
+- 布局（Layout/reflow）
+- 绘制（paint）
+
+### 5. TCP断开
+四次🤝
+- C --(FIN，ACK)--> S
+- C <--(ACK)-- S
+- C <--(FIN)-- S
+- C --(ACK)--> S
+
+
+
+## 疑问
+- PUT DELETE方法为什么不常用，不带验证机制什么意思？
+- CDN具体是怎么应用的
+
+
 
 ## 攻击
 - XSS，动态解析html（从服务端数据或者从url上）造成加载其它不可控的脚本。

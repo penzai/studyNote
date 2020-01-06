@@ -93,7 +93,9 @@ const MyApply = function(context = window, args) {
 
 ### bind
 
-- 新函数使用 new 操作符的情况
+- 注意新函数使用 new 操作符的情况，需要
+    - 灵活调整apply方法的this指针
+    - 设置prototype
 
 ```javascript
 const myBind = function(obj, ...args) {
