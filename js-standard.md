@@ -306,49 +306,57 @@ SubType.prototype.constructor = SubType;
 > 类的静态属性继承：`Object.setPrototypeOf(SubType, SuperType)`
 
 ### 原型
-要产生一个变量v，需要：
-1. 能设置v的自有属性（要是能按一定逻辑设置就更好了）
-2. 能设置v的公有属性
 
-js用了以下东西来操作：
-1. 用一个函数f来设置自有属性，函数拥有逻辑，更贴切
-2. 一个对象p，包含所有类v变量的公有属性
+要产生一个变量 v，需要：
+
+1. 能设置 v 的自有属性（要是能按一定逻辑设置就更好了）
+2. 能设置 v 的公有属性
+
+js 用了以下东西来操作：
+
+1. 用一个函数 f 来设置自有属性，函数拥有逻辑，更贴切
+2. 一个对象 p，包含所有类 v 变量的公有属性
 
 为了更加紧密、规范：
-1. 函数采用大写命名F，别名构造函数
-2. 函数天生拥有一个属性`prototype`，来存储对象p
 
-所以任何一个变量v就可以由一个构造函数F生成。
+1. 函数采用大写命名 F，别名构造函数
+2. 函数天生拥有一个属性`prototype`，来存储对象 p
 
-生成后的v怎么与构造函数关联呢。
+所以任何一个变量 v 就可以由一个构造函数 F 生成。
 
-想当然的是v的一个属性指向构造函数F，问题有两：
-- 该关联属性应该有所隐藏，不能算作v表现的东西
-- 找寻公有属性，需要多取一次值，需要F.prototype，一次到没什么，当层级多了以后，这是一种不必要的浪费
+生成后的 v 怎么与构造函数关联呢。
 
-js采用了以下设置：
-1. 变量v拥有一个隐式原型`__proto__`
-2. `__proto__`直接指向公有属性p，而不是构造函数F，而出于又要能与构造函数F关联，所以把F存在了公有属性p的属性`constructor`中
+想当然的是 v 的一个属性指向构造函数 F，问题有两：
+
+- 该关联属性应该有所隐藏，不能算作 v 表现的东西
+- 找寻公有属性，需要多取一次值，需要 F.prototype，一次到没什么，当层级多了以后，这是一种不必要的浪费
+
+js 采用了以下设置：
+
+1. 变量 v 拥有一个隐式原型`__proto__`
+2. `__proto__`直接指向公有属性 p，而不是构造函数 F，而出于又要能与构造函数 F 关联，所以把 F 存在了公有属性 p 的属性`constructor`中
 
 至此，一切关联都理所当然。
 
-#### 解决Function
-构造函数F又是谁生成的呢？按照推论到底，是Function函数，那么Function函数又是由哪个构造函数生成的呢。
+#### 解决 Function
 
-函数Function自己创造了自己，这条规则却不适用于Object.prototype
+构造函数 F 又是谁生成的呢？按照推论到底，是 Function 函数，那么 Function 函数又是由哪个构造函数生成的呢。
+
+函数 Function 自己创造了自己，这条规则却不适用于 Object.prototype
 
 - ✅`Function.__proto__.constructor === Function`
 - ✅`Function.__proto__ === Function.prototype`
 - ❌`Object.prototype.__proto__ === Object.prototype`
 
-#### 解决Object.prorotype
-公有属性p，也就是原型prototype推论到底，是由Object构造函数生成的，Object在上述第一个问题中产生，可是Object.prototype又是怎么产生的。
+#### 解决 Object.prorotype
 
-null不借构造函数就创造了Object.prototype，即：
+公有属性 p，也就是原型 prototype 推论到底，是由 Object 构造函数生成的，Object 在上述第一个问题中产生，可是 Object.prototype 又是怎么产生的。
+
+null 不借构造函数就创造了 Object.prototype，即：
 
 - ✅`Object.prototype.__proto__ === null`
 
-那么自然Object.prototype的构造函数也没有。
+那么自然 Object.prototype 的构造函数也没有。
 
 ![http://www.mollypages.org/tutorials/js.mp](img/js-standard/jsobj_full.jpg)
 
@@ -624,7 +632,7 @@ match、exec、test 方法
 - `Object.observe`
 - `MutationObserver`
 
-### `ajax`
+## `ajax`
 
 #### 原生写法
 
@@ -717,88 +725,6 @@ fetch(url, {
 
 - `cookie` 传递
 - `404`、`503` 等错误不被认为是网络错误，是不会抛错的。在中间件里用 `reponse.ok` 与 `response.status` 来确定处理
-
-### 冒泡排序
-
-#### 基础写法
-
-```javascript
-const bubbleSortByASC = arr => {
-  for (let i = 0; i < arr.length; i++) {
-    for (let j = 0; j < arr.length - i - 1; j++) {
-      if (arr[j] > arr[j + 1]) [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
-    }
-  }
-};
-```
-
-#### 优化 1：外层轮回次数优化
-
-当一轮没进行任何交换时，已是有序状态，不再轮回排序
-
-```javascript
-const bubbleSortByASC = arr => {
-  for (let i = 0; i < arr.length; i++) {
-    let isSorted = true;
-    for (let j = 0; j < arr.length - i - 1; j++) {
-      if (arr[j] > arr[j + 1]) {
-        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
-        isSorted = false;
-      }
-    }
-    if (isSorted) {
-      break;
-    }
-  }
-};
-```
-
-#### 优化 2：找出有序边界
-
-每轮回一次，尽量缩小无序数组的范围
-
-```javascript
-const bubbleSortByASC = arr => {
-  // 上次交换位置
-  let lastExchangeIndex = 0;
-  // 无序数组边界，即在这个范围内进行两两比较
-  let sortBorder = arr.length - 1;
-
-  for (let i = 0; i < arr.length; i++) {
-    let isSorted = true;
-    for (let j = 0; j < sortBorder; j++) {
-      if (arr[j] > arr[j + 1]) {
-        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
-        // 设false，说明这一轮进行了交换，是无序的
-        isSorted = false;
-        // 每次更新交换位置
-        lastExchangeIndex = j;
-      }
-    }
-    // 这一轮的最后交换位置即为有序数组与无序数组的分界
-    // lastExchangeIndex属于无序数组
-    sortBorder = lastExchangeIndex;
-    // 这一轮没进行任何交换，即已是有序数组，跳出，不再轮回
-    if (isSorted) {
-      break;
-    }
-  }
-};
-```
-
-#### 一直认为的错误版本（虽然也能排序）
-
-```javascript
-const sort = arr => {
-  for (let i = 0; i < arr.length; i++) {
-    for (let j = i + 1; j < arr.length; j++) {
-      if (arr[i] < arr[j]) {
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-      }
-    }
-  }
-};
-```
 
 ### 连等赋值
 
@@ -1073,3 +999,13 @@ setInterval(replaceThing, 1000);
 #### 字符串
 
 每一行前面加相应的字符。
+
+## 模块化
+### CommonJS
+node实践者，同步加载（因为在服务器本地），输出值的一份拷贝
+### ES Module
+编译时即确定引用关系，输出值的一份引用
+### AMD（require.js）
+依赖提前下载，然后乱序执行，等待所有模块执行完毕，执行回调函数，输出值的一份引用
+### CMD (Common Module Definition)（sea.js）
+依赖提前下载，然后运行到使用require关键词的地方再执行，输出值的一份引用

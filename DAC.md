@@ -19,13 +19,15 @@
 
 **T(n) = 算法为求解规模为 n 的问题，所需执行的基本操作次数。**
 
-### 时间复杂度记号O
-诸如此类的还有记号Ω（最好情况），记号Θ（平均情况）。
+### 时间复杂度记号 O
+
+诸如此类的还有记号 Ω（最好情况），记号 Θ（平均情况）。
+
 - O(1)。常数解
-- O(logn)。不超过O(n)。来自于调和级数1 + 1/2 + 1/3 + ... + 1/n
+- O(logn)。不超过 O(n)。来自于调和级数 1 + 1/2 + 1/3 + ... + 1/n
 - O(n)。线性复杂度
-- O(nlogn)。来自对数级数log1 + log2 + log3 +... + logn = log(n!)
-- O(n^c)多项式复杂度，不超过O(2^n)
+- O(nlogn)。来自对数级数 log1 + log2 + log3 +... + logn = log(n!)
+- O(n^c)多项式复杂度，不超过 O(2^n)
 - O(2^n)指数复杂度
 
 ## 排序
@@ -38,6 +40,72 @@ O(n^2)
 
 1. 提前发现左侧的有序队列，在判断中加入是否进行交换的标志，如果未进行交换，说明 剩下的序列全是有序的。
 
+#### 基础写法
+
+```javascript
+const bubbleSortByASC = arr => {
+  for (let i = 0; i < arr.length; i++) {
+    for (let j = 0; j < arr.length - i - 1; j++) {
+      if (arr[j] > arr[j + 1]) [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+    }
+  }
+};
+```
+
+#### 优化 1：外层轮回次数优化
+
+当一轮没进行任何交换时，已是有序状态，不再轮回排序
+
+```javascript
+const bubbleSortByASC = arr => {
+  for (let i = 0; i < arr.length; i++) {
+    let isSorted = true;
+    for (let j = 0; j < arr.length - i - 1; j++) {
+      if (arr[j] > arr[j + 1]) {
+        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+        isSorted = false;
+      }
+    }
+    if (isSorted) {
+      break;
+    }
+  }
+};
+```
+
+#### 优化 2：找出有序边界
+
+每轮回一次，尽量缩小无序数组的范围
+
+```javascript
+const bubbleSortByASC = arr => {
+  // 上次交换位置
+  let lastExchangeIndex = 0;
+  // 无序数组边界，即在这个范围内进行两两比较
+  let sortBorder = arr.length - 1;
+
+  for (let i = 0; i < arr.length; i++) {
+    let isSorted = true;
+    for (let j = 0; j < sortBorder; j++) {
+      if (arr[j] > arr[j + 1]) {
+        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+        // 设false，说明这一轮进行了交换，是无序的
+        isSorted = false;
+        // 每次更新交换位置
+        lastExchangeIndex = j;
+      }
+    }
+    // 这一轮的最后交换位置即为有序数组与无序数组的分界
+    // lastExchangeIndex属于无序数组
+    sortBorder = lastExchangeIndex;
+    // 这一轮没进行任何交换，即已是有序数组，跳出，不再轮回
+    if (isSorted) {
+      break;
+    }
+  }
+};
+```
+
 ### 归并排序（merge sort）
 
 分治策略（重点在合）
@@ -45,12 +113,13 @@ O(n^2)
 
 ### 选择排序（selection sort）
 
-O(n^2)/Θ(n^2)，雷打不动n^2。
+O(n^2)/Θ(n^2)，雷打不动 n^2。
 
 ### 插入排序 (insertion sort)
 
 O(n^2)/Ω(n)/Θ(n^2)，原始序列越有序，时间复杂度越低。
-``` javascript
+
+```javascript
 const insertionSort = arr => {
   for (let i = 1; i < arr.length; i++) {
     const temp = arr[i];
@@ -69,6 +138,7 @@ const insertionSort = arr => {
 O(n^2)/Θ(nlogn)，分治策略（重点在分），不稳定，就地
 
 方案一：两个指针向中间靠，通过空闲元素来进行交换，最后把轴点交换到中间
+
 ```javascript
 const quickSort = (arr, lo, hi) => {
   if (hi - lo < 1) return; //循环终止条件
@@ -77,6 +147,7 @@ const quickSort = (arr, lo, hi) => {
   quickSort(arr, mi + 1, hi);
 };
 ```
+
 ```javascript
 const partition = (arr, lo, hi) => {
   const pivot = arr[lo];
